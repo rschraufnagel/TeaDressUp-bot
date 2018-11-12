@@ -1,3 +1,4 @@
 {
  "connection":"../database/DressUp.db"
+ ,"pageLength": 8
 }

@@ -1,4 +1,5 @@
 const ImageBuilder = require('./img/ImageBuilder');
+const Embed = require('./message/Message');
 
 /**
  * Routing all messages
@@ -7,6 +8,10 @@ const ImageBuilder = require('./img/ImageBuilder');
 module.exports = function (message) {
   var args = getArgs(message, 1);
   switch (args[0]) {
+    case "items":
+    case "i":
+      viewMyItems(message, args.slice(1))
+      break;
     case "view":
     case "v":
       viewCharacter(message, args.slice(1));
@@ -48,4 +53,18 @@ async function viewCharacter(message, args) {
   }catch(err){
     console.error(err);
   }
+}
+
+async function viewMyItems(message, args){
+  //TODO: replace this with the data pulled from the database.
+  let items = [
+    {ItemId:1, ItemName:"Base Character", Value:0, Url:"/input/character_base.png"}
+    ,{ItemId:2, ItemName:"Background - Yellow", Value:10, Url:"/input/bg_yellow.png"}
+    ,{ItemId:3, ItemName:"Background - Pink", Value:10, Url:"/input/bg_pink.png"}
+    ,{ItemId:4, ItemName:"Accessory - Pink Bow", Value:20, Url:"/input/accessory_pink_bow.png"}
+    ,{ItemId:5, ItemName:"Shoes - Blue", Value:5, Url:"/input/shoes_blue.png"}
+    ,{ItemId:6, ItemName:"Gloves - Cyan", Value:5, Url:"/input/gloves_cyan.png"}
+  ];
+  
+  Embed.printItems(message, items);
 }
