@@ -7,9 +7,9 @@ const ImageBuilder = require('./img/ImageBuilder');
 module.exports = function (message) {
   var args = getArgs(message, 1);
   switch (args[0]) {
-    case "show":
-    case "s":
-      show(message, args.slice(1));
+    case "view":
+    case "v":
+      viewCharacter(message, args.slice(1));
       break;
     default:
       console.log("Args: "+ args);
@@ -32,17 +32,20 @@ function getArgs(message, startIndex=2){
  * @param {*} message 
  * @param {*} args 
  */
-async function show(message, args) {
-  img = [
+async function viewCharacter(message, args) {
+  img1 = [
     './img/input/bg_yellow.png'
-    ,'./img/input/character_base.png'
-    ,'./img/input/gloves_cyan.png'
-  ]
-  
-  let buffer = await ImageBuilder.getBuffer(img);
-  message.channel.send('Composite 1 Image Below', {
-    files: [
-      buffer
-    ]
-  });
+   ,'./img/input/character_base.png'
+   ,'./img/input/gloves_cyan.png'
+   ,'./img/input/accessory_pink_bow.png'
+   ,'./img/input/shoes_blue.png'
+ ]
+  try{
+    let buffer1 = await ImageBuilder.getBuffer(img1);
+    message.channel.send('Composite 1 Image Below', {
+      files: [buffer1]
+    });
+  }catch(err){
+    console.error(err);
+  }
 }
