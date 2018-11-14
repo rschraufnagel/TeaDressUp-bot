@@ -23,8 +23,7 @@ function getBuffer(urls, multiplier=1){
 
   return bufferMergePromise.then(function(image){
     return sharp(image)
-    .resize(213)
-    .sharpen()
+    .resize(192,192,{kernel: sharp.kernel.nearest})
     .toBuffer();
   });
 }
