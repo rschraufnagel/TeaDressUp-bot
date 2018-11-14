@@ -21,7 +21,24 @@ function itemEmbed(msgEmbed, items) {
   return newEmbed;
 }
 
+function lootBoxEmbed(msgEmbed, lootboxes){
+  var newEmbed = msgEmbed;
+  for (var i = 0; i < lootboxes.length; i++) {
+    var lootbox = lootboxes[i];
+    
+    newEmbed.addField(lootbox.LootBoxName);
+  }
+  return newEmbed;
+}
 
+module.exports.printLootboxes = async function (message, lootboxes, p1=1, title="Loot boxes") {
+  var msgEmbed = Paginate.createEmbedPage(p1, lootboxes, title, lootBoxEmbed)
+  var response = await message.channel.send(msgEmbed);
+  
+  if (config.pageLength < lootboxes.length) {
+    Paginate.addListeners(message, response, p1, lootboxes, title, lootBoxEmbed);
+  }
+}
 
 module.exports.printMessage = function (message, text) {
   var msg = {

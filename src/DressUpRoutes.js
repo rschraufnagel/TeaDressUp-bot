@@ -28,7 +28,10 @@ module.exports = function (message) {
       break;
     case "giveitem":
       giveItem(message, args.slice(1));
-      break;  
+      break;
+    case "viewlootboxes":
+      viewlootboxes(message, args.slice(1));
+      break;
     default:
       console.log("Args: "+ args);
       message.channel.send('Invalid Command!');
@@ -164,6 +167,16 @@ async function unEquipAllItems(message, args){
     Embed.printMessage(message, "Your character has been cleared.");
   }catch(err){
     console.error('unEquipItem Error : ' + err + " - " + err.stack);
+    Embed.printError(message, err.message?err.message:err);
+  }
+}
+
+async function viewlootboxes(message, args) {
+  try{
+    let lootboxes = await getDressUpItem.selectAllLootBoxes();
+    Embed.printLootboxes(message, lootboxes);
+  }catch(err){
+    console.error('viewCharacter Error : ' + err + " - " + err.stack);
     Embed.printError(message, err.message?err.message:err);
   }
 }
