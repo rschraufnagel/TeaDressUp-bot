@@ -3,7 +3,8 @@ const config = require('../config');
 
 module.exports = {
   getUserItem : getUserItem,
-  selectUserCharacterItems : selectUserCharacterItems
+  selectUserCharacterItems : selectUserCharacterItems,
+  selectAllLootBoxes: selectAllLootBoxes
 }
 
 function getUserItem(userid, unitid) {
@@ -33,33 +34,21 @@ function selectUserCharacterItems(userid) {
   });
 }
 
-
-//Retrieve All Items the User Has
-function selectUsersItems(userid) {
+//Retrieve All Dressup Items to display
+function selectAllLootBoxes() {
+  let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
+  let sqlquery = "Select LootBoxName from Lootboxes";
   return new Promise(function(resolve, reject) {
-    let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
-    let sqlRetrieveItems = "Select ItemName from DressUpItems INNER JOIN DiscordUserDressUpItemsOwned ON DiscordUserDressUpItemsOwned.UserId=DressUpItems.user_id WHERE user_id = ?"
-
-    db.run(sqlRetrieveItems, [userid], (err) => {
+    db.all(sqlquery, (err, rows) => {
       if (err) {reject (err);}
-      resolve(user);
+      if(rows==null){
+        resolve([]);
+      }else{
+        resolve(rows);
+      }
     });
     db.close();
   });
-}
-
-//Retrieve All Dressup Items to display
-function selectAllDressUpItems() {
-    return new Promise(function(resolve, reject) {
-        let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
-        let sqlRetrieveItems = "Select * from DressUpItems"
-    
-        db.run(sqlRetrieveItems, [userid], (err) => {
-          if (err) {reject (err);}
-          resolve(user);
-        });
-        db.close();
-      });
 }
 
 
