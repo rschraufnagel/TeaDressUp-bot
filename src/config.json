@@ -1,4 +1,15 @@
 {
- "connection":"../database/DressUp.db"
+ "connection":"./database/DressUp.db"
  ,"pageLength": 8
+ ,"colours" : {
+     "error" : "0xcc263c"
+    ,"normal" : "0x2eb8b8"
+    ,"confirm" : "0xffd711"
+  }
+ ,"admins" : {
+    "Anzy" : false,
+    "---78615507703439360" : true,
+    "Triask" : false,
+    "116360190206541825" : true
+  }
 }

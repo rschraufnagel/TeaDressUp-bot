@@ -1,6 +1,8 @@
 const ImageBuilder = require('./img/ImageBuilder');
+const getDressUpItem = require('./db/getDressUpItems');
+const addDressUpItem = require('./db/addDressUpItem');
 const Embed = require('./message/Message');
-
+const config = require('./config');
 /**
  * Routing all messages
  * @param {*} message 
@@ -12,9 +14,14 @@ module.exports = function (message) {
     case "i":
       viewMyItems(message, args.slice(1))
       break;
-    case "view":
-    case "v":
+    case "viewchar":
       viewCharacter(message, args.slice(1));
+      break;
+    case "equip":
+      equipItem(message, args.slice(1));
+      break;
+    case "giveitem":
+      giveItem(message, args.slice(1));
       break;
     default:
       console.log("Args: "+ args);
@@ -33,25 +40,23 @@ function getArgs(message, startIndex=2){
 }
 
 /**
- * 
+ * Print the current users Saved Character.
  * @param {*} message 
- * @param {*} args 
  */
-async function viewCharacter(message, args) {
-  img1 = [
-    './img/input/bg_yellow.png'
-   ,'./img/input/character_base.png'
-   ,'./img/input/gloves_cyan.png'
-   ,'./img/input/accessory_pink_bow.png'
-   ,'./img/input/shoes_blue.png'
- ]
+async function viewCharacter(message) {
   try{
-    let buffer1 = await ImageBuilder.getBuffer(img1);
-    message.channel.send('Composite 1 Image Below', {
+    let items = await getDressUpItem.selectUserCharacterItems(message.author.id);
+    let urls = items.map(item=> {return './img'+item.Url});
+    if(urls.length==0){
+      throw Error("You have no items allocated to your character.");
+    }
+    let buffer1 = await ImageBuilder.getBuffer(urls);
+    message.channel.send('', {
       files: [buffer1]
     });
   }catch(err){
-    console.error(err);
+    console.error('viewCharacter Error : ' + err + " - " + err.stack);
+    Embed.printError(message, err.message?err.message:err);
   }
 }
 
@@ -67,4 +72,45 @@ async function viewMyItems(message, args){
   ];
   
   Embed.printItems(message, items);
+}
+
+
+/**
+ * Admin command to give an item (currently only gives to yourself TODO: give to a different user)
+ * @param {*} message 
+ * @param {*} args 
+ */
+async function giveItem(message, args){
+  if(config.admins[message.author.id]){
+    let success = await addDressUpItem.insertUserItem(message.author.id, args[0]);
+    if(success){
+      Embed.printMessage(message, "Done");
+    }else{
+      Embed.printError(message, "Something didn't work");
+    }
+  }else{
+    Embed.printError(message, "You don't have access to this command.");
+  }
+}
+
+/**
+ * Adds the Given Item # to the current user's character.  Prints the new Character when finished.
+ * @param {*} message 
+ * @param {*} args 
+ */
+async function equipItem(message, args){
+  try{
+    let updateCount = await addDressUpItem.updateUserItemNextSequence(message.author.id, args[0]);
+    let item = await getDressUpItem.getUserItem(message.author.id, args[0]);
+    if(!item){
+      throw Error("You do not own item "+ args[0]);
+    }else if(updateCount==0){
+      throw Error("Your character already has item "+ args[0]);
+    }else{
+      viewCharacter(message)
+    }
+  }catch(err){
+    console.error('addToCharacter Error : ' + err + " - " + err.stack);
+    Embed.printError(message, err.message?err.message:err);
+  }
 }

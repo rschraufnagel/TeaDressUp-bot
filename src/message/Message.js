@@ -21,3 +21,24 @@ function itemEmbed(msgEmbed, items) {
   return newEmbed;
 }
 
+
+
+module.exports.printMessage = function (message, text) {
+  var msg = {
+    embed: {
+      color: parseInt(config.colours.normal),
+      description: text
+    }
+  }
+  message.channel.send(msg);
+}
+
+module.exports.printError = function (message, text) {
+  var msg = {
+    embed: {
+      color: parseInt(config.colours.error),
+      description: text
+    }
+  }
+  return message.channel.send(msg);
+}
