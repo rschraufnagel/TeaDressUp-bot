@@ -10,8 +10,8 @@ const config = require('./config');
 module.exports = function (message, messageContent = message.content) {
   var args = getArgs(messageContent, 0);
   switch (args[0]) {
-    case "items":
-    case "i":
+    case "vieweq":
+    case "viewequips":
       viewMyItems(message, args.slice(1))
       break;
     case "viewchar":
@@ -26,6 +26,7 @@ module.exports = function (message, messageContent = message.content) {
     case "unequipall":
       unEquipAllItems(message, args.slice(1));
       break;
+    case "additem":
     case "giveitem":
       giveItem(message, args.slice(1));
       break;
@@ -85,17 +86,15 @@ async function viewCharacter(message, args) {
 }
 
 async function viewMyItems(message, args){
-  //TODO: replace this with the data pulled from the database.
-  let items = [
-    {ItemId:1, ItemName:"Base Character", Value:0, Url:"/input/character_base.png"}
-    ,{ItemId:2, ItemName:"Background - Yellow", Value:10, Url:"/input/bg_yellow.png"}
-    ,{ItemId:3, ItemName:"Background - Pink", Value:10, Url:"/input/bg_pink.png"}
-    ,{ItemId:4, ItemName:"Accessory - Pink Bow", Value:20, Url:"/input/accessory_pink_bow.png"}
-    ,{ItemId:5, ItemName:"Shoes - Blue", Value:5, Url:"/input/shoes_blue.png"}
-    ,{ItemId:6, ItemName:"Gloves - Cyan", Value:5, Url:"/input/gloves_cyan.png"}
-  ];
+  try{
+    let items = await getDressUpItem.selectUserCharacterItems(message.author.id);
+    Embed.printItems(message, items);  
+  }catch(err){
+    console.error('viewCharacter Error : ' + err + " - " + err.stack);
+    Embed.printError(message, err.message?err.message:err);
+  }
+
   
-  Embed.printItems(message, items);
 }
 
 

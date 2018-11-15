@@ -20,7 +20,7 @@ function getUserItem(userid, unitid) {
 }
 function selectUserCharacterItems(userid) {
   let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
-  let sqlquery = "Select DressUpItems.ItemId,Sequence,ItemName,Url from DressUpItems INNER JOIN DiscordUserDressUpItemsOwned ON DiscordUserDressUpItemsOwned.ItemId = DressUpItems.ItemId WHERE UserId = ? and Sequence is not null ORDER BY Sequence ASC";
+  let sqlquery = "Select DressUpItems.ItemId,Sequence,ItemName,Url,Value from DressUpItems INNER JOIN DiscordUserDressUpItemsOwned ON DiscordUserDressUpItemsOwned.ItemId = DressUpItems.ItemId WHERE UserId = ? and Sequence is not null ORDER BY Sequence ASC";
   return new Promise(function(resolve, reject) {
     db.all(sqlquery, [userid], (err, rows) => {
       if (err) {reject (err);}
