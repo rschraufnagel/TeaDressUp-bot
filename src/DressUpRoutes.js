@@ -100,7 +100,7 @@ async function viewMyItems(message, args){
 
 async function viewitem(message, args){
   try{
-    let item = await getDressUpItem.selectItem(args[0]);
+    let item = await getDressUpItem.selectItemById(args[0]);
     if(!item){
       throw Error("Item "+ args[0] + " does not exist.");
     }else{

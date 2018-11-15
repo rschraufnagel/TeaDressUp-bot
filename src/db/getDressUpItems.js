@@ -2,13 +2,13 @@ const sqlite3 = require('sqlite3').verbose();
 const config = require('../config');
 
 module.exports = {
-  selectItem : selectItem,
+  selectItemById : selectItemById,
   selectUserItem : selectUserItem,
   selectUserCharacterItems : selectUserCharacterItems,
   selectAllLootBoxes: selectAllLootBoxes
 }
 
-function selectItem(itemid) {
+function selectItemById(itemid) {
   let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
   let sqlquery = "Select ItemName,Url,Value from DressUpItems WHERE DressUpItems.ItemId = ?";
   return new Promise(function(resolve, reject) {
