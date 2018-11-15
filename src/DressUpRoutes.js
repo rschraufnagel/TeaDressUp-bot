@@ -21,6 +21,12 @@ module.exports = function (message) {
     case "equip":
       equipItem(message, args.slice(1));
       break;
+    case "unequip":
+      unEquipItem(message, args.slice(1));
+      break;
+    case "unequipall":
+      unEquipAllItems(message, args.slice(1));
+      break;
     case "giveitem":
       giveItem(message, args.slice(1));
       break;
@@ -111,17 +117,64 @@ async function giveItem(message, args){
  */
 async function equipItem(message, args){
   try{
-    let updateCount = await addDressUpItem.updateUserItemNextSequence(message.author.id, args[0]);
-    let item = await getDressUpItem.getUserItem(message.author.id, args[0]);
-    if(!item){
-      throw Error("You do not own item "+ args[0]);
-    }else if(updateCount==0){
-      throw Error("Your character already has item "+ args[0]);
+    if(args.length>1){
+      throw Error("Equip currently only allows 1 item at a time.");
     }else{
-      viewCharacter(message)
+      let updateCount = await addDressUpItem.updateUserItemSetNextSequence(message.author.id, args[0]);
+      if(updateCount!= args.length){
+        if(args.length==1){
+          let item = await getDressUpItem.getUserItem(message.author.id, args[0]);
+          if(!item){
+            throw Error("You do not own item "+ args[0]);
+          }else{
+            throw Error("Your character already has item "+ args[0]);
+          }
+        }else{
+          throw Error( updateCount + " of the "+ args.length+" items were added to your character");
+        }
+      }
+      if(updateCount>0){
+        viewCharacter(message)
+      }
     }
   }catch(err){
-    console.error('addToCharacter Error : ' + err + " - " + err.stack);
+    console.error('equipItem Error : ' + err + " - " + err.stack);
+    Embed.printError(message, err.message?err.message:err);
+  }
+}
+/**
+ * Remove the Given Item # from the current user's character.  Prints the new Character when finished.
+ * @param {*} message 
+ * @param {*} args 
+ */
+async function unEquipItem(message, args){
+  try{
+    let item = await getDressUpItem.getUserItem(message.author.id, args[0]);
+    
+    if(!item){
+      throw Error("You do not own item "+ args[0]);
+    }else if(item.Sequence>0){
+      let updateCount = await addDressUpItem.updateUserItemRemoveSequence(message.author.id, item.Sequence);
+      viewCharacter(message)
+    }else{
+      throw Error("Item "+ args[0] + " is not currently equipped on your character.");
+    }
+  }catch(err){
+    console.error('unEquipItem Error : ' + err + " - " + err.stack);
+    Embed.printError(message, err.message?err.message:err);
+  }
+}
+/**
+ * Remove the Given Item # from the current user's character.  Prints the new Character when finished.
+ * @param {*} message 
+ * @param {*} args 
+ */
+async function unEquipAllItems(message, args){
+  try{
+    let updateCount = await addDressUpItem.updateUserItemRemoveAllSequence(message.author.id);
+    Embed.printMessage(message, "Your character has been cleared.");
+  }catch(err){
+    console.error('unEquipItem Error : ' + err + " - " + err.stack);
     Embed.printError(message, err.message?err.message:err);
   }
 }
