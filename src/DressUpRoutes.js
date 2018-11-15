@@ -100,17 +100,29 @@ async function viewMyItems(message, args){
 
 
 /**
- * Admin command to give an item (currently only gives to yourself TODO: give to a different user)
+ * Admin command to give an item (Give to another user. Note if the argumetn doesn't match the User id pattern gives to yourself)
  * @param {*} message 
  * @param {*} args 
  */
 async function giveItem(message, args){
   if(config.admins[message.author.id]){
-    let success = await addDressUpItem.insertUserItem(message.author.id, args[0]);
-    if(success){
-      Embed.printMessage(message, "Done");
-    }else{
-      Embed.printError(message, "Something didn't work");
+    try{
+      let userId = message.author.id;
+      if(args.length>1){
+        let argUserId = getUserId(args[1]);
+        if(argUserId!=args[1]){
+          userId = argUserId;
+        }
+      }
+      let success = await addDressUpItem.insertUserItem(userId, args[0]);
+      if(success){
+        Embed.printMessage(message, "Done");
+      }else{
+        Embed.printError(message, "Something didn't work");
+      }
+    }catch(err){
+      console.error('viewCharacter Error : ' + err + " - " + err.stack);
+      Embed.printError(message, err.message?err.message:err);
     }
   }else{
     Embed.printError(message, "You don't have access to this command.");
@@ -124,8 +136,6 @@ async function giveItem(message, args){
  */
 async function equipItem(message, args){
   try{
-      
-
       let equippedItems = await getDressUpItem.selectUserCharacterItems(message.author.id);
       let equippedIds = equippedItems.map(item => item.ItemId);
       let itemsToEquip = args.filter(itemId => !equippedIds.includes(parseInt(itemId)));
