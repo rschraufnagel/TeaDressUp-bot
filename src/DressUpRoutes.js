@@ -11,7 +11,11 @@ module.exports = function (message, messageContent = message.content) {
   var args = getArgs(messageContent, 0);
   switch (args[0]) {
     case "viewallitems":
-      viewAllItems(message, args.slice(1));
+    case "viewallitemsbyname":
+      viewAllItems(message, "ItemName", args.slice(1));
+      break;
+    case "viewallitemsbyid":
+      viewAllItems(message, "ItemId", args.slice(1));
       break;
     case "vieweq":
     case "viewequips":
@@ -90,9 +94,9 @@ async function viewCharacter(message, args) {
     Embed.printError(message, err.message?err.message:err);
   }
 }
-async function viewAllItems(message, args){
+async function viewAllItems(message, orderBy, args){
   try{
-    let items = await getDressUpItem.selectItemsByTag(args);
+    let items = await getDressUpItem.selectItemsByTag(orderBy, args);
     Embed.printItems(message, items);  
   }catch(err){
     console.error('viewAllItems Error : ' + err + " - " + err.stack);

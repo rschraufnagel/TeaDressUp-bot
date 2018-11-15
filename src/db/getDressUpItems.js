@@ -8,7 +8,7 @@ module.exports = {
   selectUserCharacterItems : selectUserCharacterItems,
   selectAllLootBoxes: selectAllLootBoxes
 }
-function selectItemsByTag(tags) {
+function selectItemsByTag(orderby="ItemName", tags) {
   let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
   let sqlquery = "Select ItemId,ItemName,Url,Value from DressUpItems";
 
@@ -27,7 +27,7 @@ function selectItemsByTag(tags) {
     sqlquery +=" COLLATE NOCASE";
   }
 
-  sqlquery +=" ORDER BY ItemName ASC";
+  sqlquery +=" ORDER BY "+orderby+" ASC";
 
   return new Promise(function(resolve, reject) {
     db.all(sqlquery, parms, (err, rows) => {
