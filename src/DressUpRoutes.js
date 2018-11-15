@@ -1,6 +1,7 @@
 const ImageBuilder = require('./img/ImageBuilder');
 const getDressUpItem = require('./db/getDressUpItems');
 const addDressUpItem = require('./db/addDressUpItem');
+const getLootbox = require('./db/getLootBox');
 const Embed = require('./message/Message');
 const config = require('./config');
 /**
@@ -23,7 +24,14 @@ module.exports = function (message) {
     case "giveitem":
       giveItem(message, args.slice(1));
       break;
+    case "viewlb":
+    if (args.length > 1)
+    {
+      viewLootBoxItems(message, args.slice(1));
+      break;
+    }
     case "viewlootboxes":
+    case "viewlb":
       viewlootboxes(message, args.slice(1));
       break;
     default:
@@ -120,8 +128,18 @@ async function equipItem(message, args){
 
 async function viewlootboxes(message, args) {
   try{
-    let lootboxes = await getDressUpItem.selectAllLootBoxes();
+    let lootboxes = await getLootbox.selectAllLootBoxes();
     Embed.printLootboxes(message, lootboxes);
+  }catch(err){
+    console.error('viewCharacter Error : ' + err + " - " + err.stack);
+    Embed.printError(message, err.message?err.message:err);
+  }
+}
+
+async function viewLootBoxItems(message, args) {
+  try{
+    let lootboxes = await getLootbox.selectLootBoxItems(args[0]);
+    Embed.printLootBoxItems(message, lootboxes);
   }catch(err){
     console.error('viewCharacter Error : ' + err + " - " + err.stack);
     Embed.printError(message, err.message?err.message:err);
