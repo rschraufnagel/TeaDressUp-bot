@@ -10,6 +10,9 @@ const config = require('./config');
 module.exports = function (message, messageContent = message.content) {
   var args = getArgs(messageContent, 0);
   switch (args[0]) {
+    case "viewallitems":
+      viewAllItems(message, args.slice(1));
+      break;
     case "vieweq":
     case "viewequips":
       viewMyItems(message, args.slice(1))
@@ -87,7 +90,15 @@ async function viewCharacter(message, args) {
     Embed.printError(message, err.message?err.message:err);
   }
 }
-
+async function viewAllItems(message, args){
+  try{
+    let items = await getDressUpItem.selectItemsByTag(args);
+    Embed.printItems(message, items);  
+  }catch(err){
+    console.error('viewAllItems Error : ' + err + " - " + err.stack);
+    Embed.printError(message, err.message?err.message:err);
+  }  
+}
 async function viewMyItems(message, args){
   try{
     let items = await getDressUpItem.selectUserCharacterItems(message.author.id);
@@ -95,7 +106,7 @@ async function viewMyItems(message, args){
   }catch(err){
     console.error('viewMyItems Error : ' + err + " - " + err.stack);
     Embed.printError(message, err.message?err.message:err);
-  }  
+  }
 }
 
 async function viewitem(message, args){
@@ -113,7 +124,6 @@ async function viewitem(message, args){
     console.error('viewitem Error : ' + err + " - " + err.stack);
     Embed.printError(message, err.message?err.message:err);
   }  
- 
 }
 
 
