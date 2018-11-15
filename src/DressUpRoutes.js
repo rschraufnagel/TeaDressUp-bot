@@ -7,8 +7,8 @@ const config = require('./config');
  * Routing all messages
  * @param {*} message 
  */
-module.exports = function (message) {
-  var args = getArgs(message, 1);
+module.exports = function (message, messageContent = message.content) {
+  var args = getArgs(messageContent, 0);
   switch (args[0]) {
     case "items":
     case "i":
@@ -42,22 +42,37 @@ module.exports = function (message) {
  * Ex: message "gacha showunit 1" will return [1]
  * @param {*} message
  */
-function getArgs(message, startIndex=2){
-  let args = message.content.split(/\s+/);
+function getArgs(messageContent, startIndex=2){
+  let args = messageContent.split(/\s+/);
   args = args.slice(startIndex);
   return args;
 }
+function getUserId(argumentValue){
+  var regex = /^<@(.*)>$/;
+  return argumentValue.replace(regex, "$1");
+}
+
 
 /**
  * Print the current users Saved Character.
  * @param {*} message 
  */
-async function viewCharacter(message) {
+/**
+ * print the given user id's character or the current user's character if no argument given.
+ * @param {*} message 
+ * @param {*} args userid (optional)
+ */
+async function viewCharacter(message, args) {
   try{
-    let items = await getDressUpItem.selectUserCharacterItems(message.author.id);
+    let userId = message.author.id;
+    if(args.length>0){
+      let argUserId = getUserId(args[0]);
+      userId = argUserId;
+    }
+    let items = await getDressUpItem.selectUserCharacterItems(userId);
     let urls = items.map(item=> {return './img'+item.Url});
     if(urls.length==0){
-      throw Error("You have no items allocated to your character.");
+      throw Error("No items allocated to user character.");
     }
     let buffer1 = await ImageBuilder.getBuffer(urls);
     message.channel.send('', {

@@ -13,17 +13,9 @@ client.on("message", (message) => {
 
   var msg = message.content
      ,pf = config.prefix;
-
   if (!msg.startsWith(pf) || message.author.bot) return;
-  msg = msg.slice(1);
-
-  if (msg.startsWith(" ")) {
-    console.log('DressUp');
-    DressUpRouter(message);
-  }
-  else {
-    message.channel.send("Invalid commando yo");
-  }
+  msg = msg.slice(pf.length );
+  DressUpRouter(message, msg);
 });
 
 client.login(config.token);
