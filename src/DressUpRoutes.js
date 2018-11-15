@@ -14,6 +14,9 @@ module.exports = function (message, messageContent = message.content) {
     case "viewequips":
       viewMyItems(message, args.slice(1))
       break;
+    case "viewitem":
+      viewitem(message, args.slice(1))
+      break;
     case "viewchar":
       viewCharacter(message, args.slice(1));
       break;
@@ -92,9 +95,25 @@ async function viewMyItems(message, args){
   }catch(err){
     console.error('viewMyItems Error : ' + err + " - " + err.stack);
     Embed.printError(message, err.message?err.message:err);
-  }
+  }  
+}
 
-  
+async function viewitem(message, args){
+  try{
+    let item = await getDressUpItem.selectItem(args[0]);
+    if(!item){
+      throw Error("Item "+ args[0] + " does not exist.");
+    }else{
+      let buffer1 = await ImageBuilder.getBuffer(['./img'+item.Url]);
+      message.channel.send('', {
+        files: [buffer1]
+      });
+    }
+  }catch(err){
+    console.error('viewitem Error : ' + err + " - " + err.stack);
+    Embed.printError(message, err.message?err.message:err);
+  }  
+ 
 }
 
 
@@ -187,7 +206,7 @@ async function equipItem(message, args){
  */
 async function unEquipItem(message, args){
   try{
-    let item = await getDressUpItem.getUserItem(message.author.id, args[0]);
+    let item = await getDressUpItem.selectUserItem(message.author.id, args[0]);
     
     if(!item){
       throw Error("You do not own item "+ args[0]);
