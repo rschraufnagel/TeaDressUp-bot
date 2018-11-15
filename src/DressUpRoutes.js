@@ -109,26 +109,48 @@ async function giveItem(message, args){
  */
 async function equipItem(message, args){
   try{
-    if(args.length>1){
-      throw Error("Equip currently only allows 1 item at a time.");
-    }else{
-      let updateCount = await addDressUpItem.updateUserItemSetNextSequence(message.author.id, args[0]);
-      if(updateCount!= args.length){
-        if(args.length==1){
-          let item = await getDressUpItem.getUserItem(message.author.id, args[0]);
-          if(!item){
-            throw Error("You do not own item "+ args[0]);
-          }else{
-            throw Error("Your character already has item "+ args[0]);
+      
+
+      let equippedItems = await getDressUpItem.selectUserCharacterItems(message.author.id);
+      let equippedIds = equippedItems.map(item => item.ItemId);
+      let itemsToEquip = args.filter(itemId => !equippedIds.includes(parseInt(itemId)));
+      
+      let alreadyEquipped = args.filter(itemId => !itemsToEquip.includes(itemId));
+      
+      let errorMsg = "";
+      let totalUpdates = 0;
+      if(itemsToEquip.length>0){
+        let updateResults = await addDressUpItem.updateUserItemSetNextSequence(message.author.id, itemsToEquip);
+        let totalUpdates = updateResults.reduce((x, y) => x + y);
+
+        if(totalUpdates!= itemsToEquip.length){
+          let notOwned = [];
+          for(var index = 0; index < updateResults.length; index++){
+            if(updateResults[index]==0){
+                notOwned.push(itemsToEquip[index]);
+            }
           }
-        }else{
-          throw Error( updateCount + " of the "+ args.length+" items were added to your character");
+          if(notOwned.length>0){
+            errorMsg +="You do not own item(s): " + notOwned
+          }
         }
       }
-      if(updateCount>0){
+      if(alreadyEquipped.length>0){
+        if(errorMsg.length>0){
+          errorMsg +="\n"
+        }
+        errorMsg +="Item(s) already equipped: " + alreadyEquipped
+      }
+      if(errorMsg.length>0){
+        if(totalUpdates>0){
+          errorMsg +="\nAll other items have been equipped."
+        }
+        Embed.printError(message, errorMsg);
+      }
+      
+      if(itemsToEquip.length>0){
         viewCharacter(message)
       }
-    }
   }catch(err){
     console.error('equipItem Error : ' + err + " - " + err.stack);
     Embed.printError(message, err.message?err.message:err);
@@ -164,6 +186,7 @@ async function unEquipItem(message, args){
 async function unEquipAllItems(message, args){
   try{
     let updateCount = await addDressUpItem.updateUserItemRemoveAllSequence(message.author.id);
+
     Embed.printMessage(message, "Your character has been cleared.");
   }catch(err){
     console.error('unEquipItem Error : ' + err + " - " + err.stack);
