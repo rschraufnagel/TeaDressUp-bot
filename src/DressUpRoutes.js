@@ -90,7 +90,7 @@ async function viewMyItems(message, args){
     let items = await getDressUpItem.selectUserCharacterItems(message.author.id);
     Embed.printItems(message, items);  
   }catch(err){
-    console.error('viewCharacter Error : ' + err + " - " + err.stack);
+    console.error('viewMyItems Error : ' + err + " - " + err.stack);
     Embed.printError(message, err.message?err.message:err);
   }
 
