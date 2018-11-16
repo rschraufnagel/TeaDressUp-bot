@@ -26,7 +26,19 @@ function lootBoxEmbed(msgEmbed, lootboxes){
   for (var i = 0; i < lootboxes.length; i++) {
     var lootbox = lootboxes[i];
     
-    newEmbed.addField(lootbox.LootBoxName);
+    var details = "**Lootbox Id:** " + lootbox.LootBoxId;
+    newEmbed.addField(lootbox.LootBoxName, details + "\n---------------------------------------------", true);
+  return newEmbed;
+  }
+}
+
+function lootBoxItemsEmbed(msgEmbed, lootBoxItems){
+  var newEmbed = msgEmbed;
+  for (var i = 0; i < lootBoxItems.length; i++) {
+    var lootBoxItem = lootBoxItems[i];
+    
+    var details = "**Drop Chance:** " + lootBoxItem.DropChance;
+    newEmbed.addField(lootBoxItem.ItemName, details + "\n---------------------------------------------", true);
   }
   return newEmbed;
 }
@@ -37,6 +49,15 @@ module.exports.printLootboxes = async function (message, lootboxes, p1=1, title=
   
   if (config.pageLength < lootboxes.length) {
     Paginate.addListeners(message, response, p1, lootboxes, title, lootBoxEmbed);
+  }
+}
+
+module.exports.printLootBoxItems = async function (message, lootBoxItems, p1=1, title="Basic Lootbox Contains") {
+  var msgEmbed = Paginate.createEmbedPage(p1, lootBoxItems, title, lootBoxItemsEmbed)
+  var response = await message.channel.send(msgEmbed);
+  
+  if (config.pageLength < lootBoxItems.length) {
+    Paginate.addListeners(message, response, p1, lootboxes, title, lootBoxItemsEmbed);
   }
 }
 

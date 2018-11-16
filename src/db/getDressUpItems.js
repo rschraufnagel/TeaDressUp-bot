@@ -7,7 +7,6 @@ module.exports = {
   selectItemsByTag : selectItemsByTag,
   selectUserItem : selectUserItem,
   selectUserCharacterItems : selectUserCharacterItems,
-  selectAllLootBoxes: selectAllLootBoxes
 }
 function selectItemsByTag(orderby="ItemName", tags) {
   let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
@@ -82,23 +81,6 @@ function selectUserCharacterItems(userid) {
   let sqlquery = "Select DressUpItems.ItemId,Sequence,ItemName,Url,Value from DressUpItems INNER JOIN DiscordUserDressUpItemsOwned ON DiscordUserDressUpItemsOwned.ItemId = DressUpItems.ItemId WHERE UserId = ? and Sequence is not null ORDER BY Sequence ASC";
   return new Promise(function(resolve, reject) {
     db.all(sqlquery, [userid], (err, rows) => {
-      if (err) {reject (err);}
-      if(rows==null){
-        resolve([]);
-      }else{
-        resolve(rows);
-      }
-    });
-    db.close();
-  });
-}
-
-//Retrieve All Dressup Items to display
-function selectAllLootBoxes() {
-  let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
-  let sqlquery = "Select LootBoxName from Lootboxes";
-  return new Promise(function(resolve, reject) {
-    db.all(sqlquery, (err, rows) => {
       if (err) {reject (err);}
       if(rows==null){
         resolve([]);
