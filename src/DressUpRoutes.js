@@ -40,6 +40,9 @@ module.exports = function (message, messageContent = message.content) {
     case "giveitem":
       giveItem(message, args.slice(1));
       break;
+    case "addnewitem":
+        addNewItem(message, args.slice(1));
+        break;
     case "viewlootboxes":
       viewlootboxes(message, args.slice(1));
       break;
@@ -81,7 +84,7 @@ async function viewCharacter(message, args) {
       userId = argUserId;
     }
     let items = await getDressUpItem.selectUserCharacterItems(userId);
-    let urls = items.map(item=> {return './img'+item.Url});
+    let urls = items.map(item=> {return item.Url});
     if(urls.length==0){
       throw Error("No items allocated to user character.");
     }
@@ -119,7 +122,7 @@ async function viewitem(message, args){
     if(!item){
       throw Error("Item "+ args[0] + " does not exist.");
     }else{
-      let buffer1 = await ImageBuilder.getBuffer(['./img'+item.Url]);
+      let buffer1 = await ImageBuilder.getBuffer([item.Url]);
       message.channel.send('', {
         files: [buffer1]
       });
@@ -160,6 +163,55 @@ async function giveItem(message, args){
     Embed.printError(message, "You don't have access to this command.");
   }
 }
+
+/**
+ * Admin command to add a new item to the Database
+ * @param {*} message 
+ * @param {*} args 
+ */
+async function addNewItem(message, args){
+  if(config.admins[message.author.id]){
+    try{
+      if(message.attachments.size!=1){
+        throw Error("Message must contain 1 attachment.");
+      }
+      if(args.length<3){
+        throw Error("Message must provide 3 arguments Rariry, Value, and Item Name.");
+      }
+      let itemRariry = args[0];
+      let value = parseInt(args[1]);
+      if(isNaN(value)){
+        throw Error("Value is not a number.");
+      }
+      let itemName = args.slice(2).join(" ").trim();
+      if(itemName.length==0){
+        throw Error("Item Name cannot be empty.");
+      }
+      let attachmentFile = message.attachments.first();
+      let fileName = attachmentFile.filename;
+      let foundURLItem = await getDressUpItem.selectItemByURL(fileName);
+      if( foundURLItem ){
+        throw Error(fileName + " already exists.");
+      }
+
+      ImageBuilder.downloadImage(attachmentFile.url, fileName, async function(){
+        try{
+          let index = await addDressUpItem.insertItem(itemName, 0, fileName);
+          Embed.printMessage(message, "Item added at index: " + index);
+        }catch(err){
+          console.error('downloadImageCallback Error : ' + err + " - " + err.stack);
+          Embed.printError(message, err.message?err.message:err);
+        }
+      });
+    }catch(err){
+      console.error('viewCharacter Error : ' + err + " - " + err.stack);
+      Embed.printError(message, err.message?err.message:err);
+    }
+  }else{
+    Embed.printError(message, "You don't have access to this command.");
+  }
+}
+
 
 /**
  * Adds the Given Item # to the current user's character.  Prints the new Character when finished.

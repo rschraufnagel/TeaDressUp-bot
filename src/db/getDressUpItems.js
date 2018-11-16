@@ -3,6 +3,7 @@ const config = require('../config');
 
 module.exports = {
   selectItemById : selectItemById,
+  selectItemByURL : selectItemByURL,
   selectItemsByTag : selectItemsByTag,
   selectUserItem : selectUserItem,
   selectUserCharacterItems : selectUserCharacterItems,
@@ -47,6 +48,17 @@ function selectItemById(itemid) {
   let sqlquery = "Select ItemId,ItemName,Url,Value from DressUpItems WHERE ItemId = ?";
   return new Promise(function(resolve, reject) {
     db.get(sqlquery, [itemid], (err, row) => {
+      if (err) {reject (err);}
+      resolve(row);
+    });
+    db.close();
+  });
+}
+function selectItemByURL(url) {
+  let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
+  let sqlquery = "Select ItemId,ItemName,Url,Value from DressUpItems WHERE Url = ?";
+  return new Promise(function(resolve, reject) {
+    db.get(sqlquery, [url], (err, row) => {
       if (err) {reject (err);}
       resolve(row);
     });

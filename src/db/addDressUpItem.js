@@ -2,6 +2,7 @@ const sqlite3 = require('sqlite3').verbose();
 const config = require('../config');
 
 module.exports = {
+  insertItem : insertItem,
   insertUserItem : insertUserItem,
   updateUserItemSetNextSequence : updateUserItemSetNextSequence,
   updateUserItemRemoveSequence : updateUserItemRemoveSequence,
@@ -22,6 +23,29 @@ function insertUserItem(userid, itemid) {
       if (err) {reject (err);}
       resolve(true);
     });
+    db.close();
+  });
+}
+
+/**
+ * Adds the given item to the given user return the id of the last
+ * @param {string} itemName
+ * @param {number} value
+ * @param {string} url
+ */
+function insertItem(itemName, value, url) {
+  return new Promise(function(resolve, reject) {
+    let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
+    let sql = 'INSERT INTO DressUpItems (ItemName, Value, Url) VALUES(?, ?, ?)';
+    let parms = [itemName, value, url];
+    let stmt = db.prepare(sql);
+    stmt.run(parms, (err) => {
+      if (err) {
+        reject (err);
+      }
+      resolve(stmt.lastID);
+    });
+    stmt.finalize();
     db.close();
   });
 }
