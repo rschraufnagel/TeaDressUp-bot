@@ -28,6 +28,9 @@ module.exports = function (message, messageContent = message.content) {
     case "viewchar":
       viewCharacter(message, args.slice(1));
       break;
+    case "replace":
+      replaceItem(message, args.slice(1));
+      break;
     case "equip":
       equipItem(message, args.slice(1));
       break;
@@ -87,7 +90,7 @@ function getUserId(argumentValue){
 async function viewCharacter(message, args) {
   try{
     let userId = message.author.id;
-    if(args.length>0){
+    if(args && args.length>0){
       let argUserId = getUserId(args[0]);
       userId = argUserId;
     }
@@ -204,7 +207,7 @@ async function addNewItem(message, args){
 
       ImageBuilder.downloadImage(attachmentFile.url, fileName, async function(){
         try{
-          let index = await addDressUpItem.insertItem(itemName, 0, fileName);
+          let index = await addDressUpItem.insertItem(itemName, value, fileName, itemRariry);
           Embed.printMessage(message, "Item added at index: " + index);
         }catch(err){
           console.error('downloadImageCallback Error : ' + err + " - " + err.stack);
@@ -295,6 +298,28 @@ async function unEquipItem(message, args){
     Embed.printError(message, err.message?err.message:err);
   }
 }
+async function replaceItem(message, args){
+  try{
+    if(args.length<2){
+      throw Error("Must provide Old Item and New Item");
+    }
+    let oldItem = await getDressUpItem.selectUserItem(message.author.id, args[0]);
+    let newItem = await getDressUpItem.selectUserItem(message.author.id, args[1]);
+    if(!oldItem){
+      throw Error("You do not own item "+ args[0]);
+    }else if(!newItem){
+      throw Error("You do not own item "+ args[1]);
+    }else{
+      let updateCount = await addDressUpItem.updateUserItemReplaceSequence(message.author.id, oldItem, newItem);
+      viewCharacter(message)
+    }
+
+  }catch(err){
+    console.error('replaceEquipItem Error : ' + err + " - " + err.stack);
+    Embed.printError(message, err.message?err.message:err);
+  }
+}
+
 /**
  * Remove the Given Item # from the current user's character.  Prints the new Character when finished.
  * @param {*} message 

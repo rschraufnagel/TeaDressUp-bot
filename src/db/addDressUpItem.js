@@ -5,6 +5,7 @@ module.exports = {
   insertItem : insertItem,
   insertUserItem : insertUserItem,
   updateUserItemSetNextSequence : updateUserItemSetNextSequence,
+  updateUserItemReplaceSequence : updateUserItemReplaceSequence,
   updateUserItemRemoveSequence : updateUserItemRemoveSequence,
   updateUserItemRemoveAllSequence : updateUserItemRemoveAllSequence
 }
@@ -33,11 +34,11 @@ function insertUserItem(userid, itemid) {
  * @param {number} value
  * @param {string} url
  */
-function insertItem(itemName, value, url) {
+function insertItem(itemName, value, url, rarity) {
   return new Promise(function(resolve, reject) {
     let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
-    let sql = 'INSERT INTO DressUpItems (ItemName, Value, Url) VALUES(?, ?, ?)';
-    let parms = [itemName, value, url];
+    let sql = 'INSERT INTO DressUpItems (ItemName, Value, Url, Rarity) VALUES(?, ?, ?, ?)';
+    let parms = [itemName, value, url, rarity];
     let stmt = db.prepare(sql);
     stmt.run(parms, (err) => {
       if (err) {
@@ -101,6 +102,31 @@ function updateUserItemRemoveSequence(userid, sequenceNumber) {
     let sql = 'UPDATE DiscordUserDressUpItemsOwned set Sequence = CASE WHEN Sequence=? THEN null ELSE Sequence-1 END WHERE UserId=? AND Sequence>=?';
     let stmt = db.prepare(sql)
     .run([sequenceNumber, userid, sequenceNumber], (err) => {
+      if (err) {reject (err);}
+      console.log("Rows: "+ stmt.changes);
+      resolve(stmt.changes);
+    });
+    stmt.finalize();
+    db.close();
+  });
+}
+
+/**
+ *  Update the Items owned by the given UserId using the following logic:
+ *  set sequenceNumber = null where sequenceNumber = the # provided.
+ *  set sequenceNumber = sequenceNumber-1 where sequenceNumber> the # provided.
+ * @param {string} userid
+ * @param {number} sequenceNumber
+ * @returns {Promise} promise of number of rows updated (change = 1, no change = 0).
+ */
+function updateUserItemReplaceSequence(userid, item1, item2) {
+  console.log("DB:"+ config.connection);
+  return new Promise(function(resolve, reject) {
+    let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
+    let sql = 'UPDATE DiscordUserDressUpItemsOwned set Sequence = CASE WHEN ItemId=? THEN ? ELSE ? END WHERE UserId=? AND ItemId in (?,?)';
+    let parameters = [item1.ItemId, item2.Sequence, item1.Sequence, userid, item1.ItemId, item2.ItemId]
+    let stmt = db.prepare(sql)
+    .run(parameters, (err) => {
       if (err) {reject (err);}
       console.log("Rows: "+ stmt.changes);
       resolve(stmt.changes);
