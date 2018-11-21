@@ -4,6 +4,8 @@ const addDressUpItem = require('./db/addDressUpItem');
 const getLootbox = require('./db/getLootBox');
 const Embed = require('./message/Message');
 const config = require('./config');
+const lootBox = require('./LootBox');
+
 /**
  * Routing all messages
  * @param {*} message 
@@ -45,6 +47,12 @@ module.exports = function (message, messageContent = message.content) {
     if (args.length > 1)
     {
       viewLootBoxItems(message, args.slice(1));
+      break;
+    }
+    case "buylb":
+    if (args.length > 1)
+    {
+      buyLootBox(message, args.slice(1));
       break;
     }
     case "viewlootboxes":
@@ -274,6 +282,16 @@ async function viewLootBoxItems(message, args) {
     let lootboxes = await getLootbox.selectLootBoxItems(args[0]);
     Embed.printLootBoxItems(message, lootboxes);
   }catch(err){
+    console.error('viewCharacter Error : ' + err + " - " + err.stack);
+    Embed.printError(message, err.message?err.message:err);
+  }
+}
+
+async function buyLootBox(message, args){
+  try{
+    lootBox.BuyLootBox(message, message.author.id, args[0]);
+  }
+  catch(err){
     console.error('viewCharacter Error : ' + err + " - " + err.stack);
     Embed.printError(message, err.message?err.message:err);
   }
