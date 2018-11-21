@@ -19,9 +19,11 @@ function createEmbedPage(page, items, title, itemEmbedFunction){
   var curPage = parseInt(page);
   var maxPage = Math.ceil(items.length / pageLength);
   var printItems = items.slice((pageLength * (curPage - 1)), (pageLength * curPage));
-
+  if(printItems.length==0){
+    curPage=0;
+  }
   var msgEmbed = new Discord.RichEmbed();
-  msgEmbed.setTitle("**__" + title + " " +curPage + " of " + maxPage + "__**");
+  msgEmbed.setTitle("**__" + title + "     p. " +curPage + "/" + maxPage + "__**");
   msgEmbed = itemEmbedFunction(msgEmbed, printItems);
   return msgEmbed;
 }

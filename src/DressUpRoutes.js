@@ -20,10 +20,14 @@ module.exports = function (message, messageContent = message.content) {
       break;
     case "vieweq":
     case "viewequips":
-      viewMyItems(message, args.slice(1))
+      viewCharacterItems(message, args.slice(1));
+      break;
+    case "viewinventory":
+    case "viewinv":
+      viewInventoryItems(message, args.slice(1));
       break;
     case "viewitem":
-      viewitem(message, args.slice(1))
+      viewitem(message, args.slice(1));
       break;
     case "viewchar":
       viewCharacter(message, args.slice(1));
@@ -117,12 +121,21 @@ async function viewAllItems(message, orderBy, args){
     Embed.printError(message, err.message?err.message:err);
   }  
 }
-async function viewMyItems(message, args){
+async function viewCharacterItems(message, args){
   try{
     let items = await getDressUpItem.selectUserCharacterItems(message.author.id);
     Embed.printItems(message, items);  
   }catch(err){
-    console.error('viewMyItems Error : ' + err + " - " + err.stack);
+    console.error('viewCharacterItems Error : ' + err + " - " + err.stack);
+    Embed.printError(message, err.message?err.message:err);
+  }
+}
+async function viewInventoryItems(message, args){
+  try{
+    let items = await getDressUpItem.selectUserItems(message.author.id);
+    Embed.printInventoryItems(message, items);  
+  }catch(err){
+    console.error('viewInventoryItems Error : ' + err + " - " + err.stack);
     Embed.printError(message, err.message?err.message:err);
   }
 }

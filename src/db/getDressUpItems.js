@@ -6,6 +6,7 @@ module.exports = {
   selectItemByURL : selectItemByURL,
   selectItemsByTag : selectItemsByTag,
   selectUserItem : selectUserItem,
+  selectUserItems : selectUserItems,
   selectUserCharacterItems : selectUserCharacterItems,
 }
 function selectItemsByTag(orderby="ItemName", tags) {
@@ -72,6 +73,21 @@ function selectUserItem(userid, unitid) {
     db.get(sqlquery, [userid, unitid], (err, row) => {
       if (err) {reject (err);}
       resolve(row);
+    });
+    db.close();
+  });
+}
+function selectUserItems(userid) {
+  let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
+  let sqlquery = "Select DressUpItems.ItemId,Sequence,ItemName,Url,Value,Quantity from DressUpItems INNER JOIN DiscordUserDressUpItemsOwned ON DiscordUserDressUpItemsOwned.ItemId = DressUpItems.ItemId WHERE UserId = ?";
+  return new Promise(function(resolve, reject) {
+    db.all(sqlquery, [userid], (err, rows) => {
+      if (err) {reject (err);}
+      if(rows==null){
+        resolve([]);
+      }else{
+        resolve(rows);
+      }
     });
     db.close();
   });
