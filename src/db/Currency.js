@@ -1,28 +1,22 @@
-const config = require('./config');
+const sqlite3 = require('sqlite3').verbose();
+const config = require('../config');
 
 module.exports = {
     getFlowers:getFlowers
   }
 
 function getFlowers (dUser) {
-    const sqlite3 = require('sqlite3');
-    let userFlowers = 0;
-    let db = new sqlite3.Database(); // dis mine
-    let sqlquery = "SELECT CurrencyAmount FROM DiscordUser WHERE UserID = ?;";
+    let db = new sqlite3.Database("./database/NadekoBot.db", (err) => {if (err) {reject(err);}});
+    let sqlquery = "select Amount from currency where userid = ?";
     return new Promise(function(resolve, reject) {
-        db.get(sqlquery, [dUser], (err, row) => {
-            if (err) {
-              console.log(err);
-              reject(err);
-            }
-            if (row.CurrencyAmount !== null) {
-                console.log("Amount: " + row.CurrencyAmount);
-                userFlowers = parseInt(row.CurrencyAmount);
-                resolve(row.CurrencyAmount);
-            } else {
-                console.log("No user found with that ID.");
-            }
-        })
-        db.close();
+      db.all(sqlquery, [dUser], (err, rows) => {
+        if (err) {reject (err);}
+        if(rows==null){
+          resolve([]);
+        }else{
+          resolve(rows);
+        }
+      });
+      db.close();
     });
 }

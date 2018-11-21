@@ -8,6 +8,8 @@ module.exports = {
   selectUserItem : selectUserItem,
   selectUserItems : selectUserItems,
   selectUserCharacterItems : selectUserCharacterItems,
+  FilteredItemsByLootBoxIdAndRarity: FilteredItemsByLootBoxIdAndRarity,
+  RandomItemBasedOnRarity: RandomItemBasedOnRarity
 }
 function selectItemsByTag(orderby="ItemName", tags) {
   let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
@@ -108,5 +110,45 @@ function selectUserCharacterItems(userid) {
   });
 }
 
+/**
+ * Getting Filtered Items from the database)
+ * @param {number} LootBoxId 
+ * @param {string} Rarity
+ */
+function FilteredItemsByLootBoxIdAndRarity(LootBoxId, Rarity) {
+  let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
+  let sqlquery = "Select DressUpItems.ItemId, ItemName, Value, Url, DropChance from DressUpItems inner join LootBoxItems on DressUpItems.ItemId = LootBoxItems.ItemId where LootBoxItems.LootBoxId = ? and DressUpItems.Rarity = ? Order by DropChance ASC";
+  return new Promise(function(resolve, reject) {
+    db.all(sqlquery, [LootBoxId, Rarity], (err, rows) => {
+      if (err) {reject (err);}
+      if(rows==null){
+        resolve([]);
+      }else{
+        resolve(rows);
+      }
+    });
+    db.close();
+  });
+}
+
+/**
+ * Getting Random Rarity Item from the database)
+ * @param {string} Rarity
+ */
+function RandomItemBasedOnRarity(Rarity) {
+  let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
+  let sqlquery = "Select DressUpItems.ItemId, ItemName, Value, Url, DropChance from DressUpItems inner join LootBoxItems on DressUpItems.ItemId = LootBoxItems.ItemId where LootBoxItems.LootBoxId = ? and DressUpItems.Rarity = ? Order by DropChance ASC";
+  return new Promise(function(resolve, reject) {
+    db.all(sqlquery, [LootBoxId, Rarity], (err, rows) => {
+      if (err) {reject (err);}
+      if(rows==null){
+        resolve([]);
+      }else{
+        resolve(rows);
+      }
+    });
+    db.close();
+  });
+}
 
 
