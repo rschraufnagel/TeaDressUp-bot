@@ -3,7 +3,7 @@ const config = require('../config');
 
 module.exports = {
   selectItemById : selectItemById,
-  selectItemByURL : selectItemByURL,
+  selectItemByFileName : selectItemByFileName,
   selectItemsByTag : selectItemsByTag,
   selectUserItem : selectUserItem,
   selectUserItems : selectUserItems,
@@ -57,11 +57,11 @@ function selectItemById(itemid) {
     db.close();
   });
 }
-function selectItemByURL(url) {
+function selectItemByFileName(fileName) {
   let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
   let sqlquery = "Select ItemId,ItemName,Url,Value from DressUpItems WHERE Url = ?";
   return new Promise(function(resolve, reject) {
-    db.get(sqlquery, [url], (err, row) => {
+    db.get(sqlquery, [fileName], (err, row) => {
       if (err) {reject (err);}
       resolve(row);
     });

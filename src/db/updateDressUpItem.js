@@ -92,17 +92,17 @@ async function giveUserItem(userId, itemId){
  * Adds the given item to the given user return the id of the last
  * @param {string} itemName
  * @param {number} value
- * @param {string} url
+ * @param {string} fileName
  * @return {*} id of the item created.
  */
-async function addItem(itemName, value, url, rarity){
+async function addItem(itemName, value, fileName, rarity){
   let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
   //SQLITE by default doesn't load enforcing foreign key constraints (turn it on).
   //TODO: Probably need a better way overall to handle db connections across the app.
   let pragma = await updateAsync(db, 'PRAGMA foreign_keys=on');
 
   let sql = 'INSERT INTO DressUpItems (ItemName, Value, Url, Rarity) VALUES(?, ?, ?, ?)';
-  let id = await insertAsync(db, sql, [itemName, value, url, rarity]);
+  let id = await insertAsync(db, sql, [itemName, value, fileName, rarity]);
   db.close();
 
   return id;

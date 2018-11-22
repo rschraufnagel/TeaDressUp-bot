@@ -59,7 +59,7 @@ module.exports = {
 
         let FilteredItemsByLootBoxIdAndRarity = await getDressUpItem.RandomItemBasedOnRarity(TypeOfRarity);
 
-            let buffer1 = await ImageBuilder.getBuffer(['./img'+FilteredItemsByLootBoxIdAndRarity.Url]);
+            let buffer1 = await ImageBuilder.getBuffer(['./img/'+FilteredItemsByLootBoxIdAndRarity.Url]);
             message.channel.send('', {
               files: [buffer1]
             });

@@ -110,11 +110,11 @@ async function viewCharacter(message, args) {
       userId = argUserId;
     }
     let items = await getDressUpItem.selectUserCharacterItems(userId);
-    let urls = items.map(item=> {return item.Url});
-    if(urls.length==0){
+    let fileNames = items.map(item=> {return item.Url});
+    if(fileNames.length==0){
       throw Error("No items allocated to user character.");
     }
-    let buffer1 = await ImageBuilder.getBuffer(urls);
+    let buffer1 = await ImageBuilder.getBuffer(fileNames);
     message.channel.send('', {
       files: [buffer1]
     });
@@ -255,12 +255,12 @@ async function addNewItem(message, args){
       }
       let attachmentFile = message.attachments.first();
       let fileName = attachmentFile.filename;
-      let foundURLItem = await getDressUpItem.selectItemByURL(fileName);
-      if( foundURLItem ){
+      let foundFileNameItem = await getDressUpItem.selectItemByFileName(fileName);
+      if( foundFileNameItem ){
         throw Error(fileName + " already exists.");
       }
 
-      ImageBuilder.downloadImage(attachmentFile.url, fileName, async function(){
+      ImageBuilder.downloadImage(attachmentFile.fileName, fileName, async function(){
         try{
           let index = await addDressUpItem.addItem(itemName, value, fileName, itemRariry);
           Embed.printMessage(message, "Item added at index: " + index);
