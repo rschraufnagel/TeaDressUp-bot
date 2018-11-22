@@ -181,7 +181,7 @@ async function giveItem(message, args){
           userId = argUserId;
         }
       }
-      let success = await addDressUpItem.insertUserItem(userId, args[0]);
+      let success = await addDressUpItem.giveUserItem(userId, args[0]);
       if(success){
         Embed.printMessage(message, "Done");
       }else{
@@ -228,7 +228,7 @@ async function addNewItem(message, args){
 
       ImageBuilder.downloadImage(attachmentFile.url, fileName, async function(){
         try{
-          let index = await addDressUpItem.insertItem(itemName, value, fileName, itemRariry);
+          let index = await addDressUpItem.addItem(itemName, value, fileName, itemRariry);
           Embed.printMessage(message, "Item added at index: " + index);
         }catch(err){
           console.error('downloadImageCallback Error : ' + err + " - " + err.stack);
@@ -261,7 +261,7 @@ async function equipItem(message, args){
       let errorMsg = "";
       let totalUpdates = 0;
       if(itemsToEquip.length>0){
-        let updateResults = await addDressUpItem.updateUserItemSetNextSequence(message.author.id, itemsToEquip);
+        let updateResults = await addDressUpItem.addNextSequences(message.author.id, itemsToEquip);
         let totalUpdates = updateResults.reduce((x, y) => x + y);
 
         if(totalUpdates!= itemsToEquip.length){
@@ -309,7 +309,7 @@ async function unEquipItem(message, args){
     if(!item){
       throw Error("You do not own item "+ args[0]);
     }else if(item.Sequence>0){
-      let updateCount = await addDressUpItem.updateUserItemRemoveSequence(message.author.id, item.Sequence);
+      let updateCount = await addDressUpItem.removeSequence(message.author.id, item.Sequence);
       viewCharacter(message)
     }else{
       throw Error("Item "+ args[0] + " is not currently equipped on your character.");
@@ -331,7 +331,7 @@ async function replaceItem(message, args){
     }else if(!newItem){
       throw Error("You do not own item "+ args[1]);
     }else{
-      let updateCount = await addDressUpItem.updateUserItemReplaceSequence(message.author.id, oldItem, newItem);
+      let updateCount = await addDressUpItem.swapSequences(message.author.id, oldItem, newItem);
       viewCharacter(message)
     }
 
@@ -348,7 +348,7 @@ async function replaceItem(message, args){
  */
 async function unEquipAllItems(message, args){
   try{
-    let updateCount = await addDressUpItem.updateUserItemRemoveAllSequence(message.author.id);
+    let updateCount = await addDressUpItem.removeAllSequence(message.author.id);
 
     Embed.printMessage(message, "Your character has been cleared.");
   }catch(err){
