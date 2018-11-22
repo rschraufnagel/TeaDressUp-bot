@@ -170,7 +170,11 @@ async function swapSequences(userid, item1, item2){
   return updates;
 }
 
-
+/**
+ * Adds the given items to the user's active item list at the next highest position (items already in the active list remain at their current position)
+ * @param {string} userid 
+ * @param {array} itemids array of itemIds
+ */
 async function addNextSequences(userid, itemids){
   let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
   //SQLITE by default doesn't load enforcing foreign key constraints (turn it on).
@@ -187,35 +191,3 @@ async function addNextSequences(userid, itemids){
   return resultUpdates;
 }
 
-/**
- * Adds the given items to the user's active item list at the next highest position (items already in the active list remain at their current position)
- * @param {string} userid 
- * @param {array} itemids array of itemIds
- */
-function updateUserItemSetNextSequence(userid, itemids) {
-  return new Promise(function(resolve, reject) {
-    let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
-    let sql = 'UPDATE DiscordUserDressUpItemsOwned set Sequence = IFNULL(IFNULL(Sequence, (SELECT 1+MAX(Sequence) FROM DiscordUserDressUpItemsOwned WHERE UserId=?)),1) WHERE UserId=? AND ItemId=?';
-    let resultUpdates = [];
-    db.serialize(async function(){
-      let stmt = db.prepare(sql);
-
-      let statementsReturned = 0;
-      for(var i=0; i<itemids.length; i++){
-        let parms = [userid, userid, itemids[i]];
-        stmt.run(parms, (err) => {
-          statementsReturned++;
-          if (err) {
-            reject (err);
-          }
-          resultUpdates.push(stmt.changes);
-          if(statementsReturned==itemids.length){
-            resolve(resultUpdates);
-          }
-        });
-      }
-      stmt.finalize();
-    });
-    db.close();
-  });
-}
