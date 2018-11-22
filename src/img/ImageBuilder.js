@@ -18,6 +18,11 @@ function downloadImage(fileName, imageName, callbackFunction){
   console.log("Done Outer");
 }
 
+
+function getPreviewSequence(fileNames){
+  
+}
+
 /**
  * Create a new file given fileNames for component images.
  * @param {*} fileNames 
@@ -40,8 +45,6 @@ function getBuffer(fileNames, multiplier=1){
     .resize(192,192,{kernel: sharp.kernel.nearest})
     .toBuffer();
   });
-
-
 }
 
 

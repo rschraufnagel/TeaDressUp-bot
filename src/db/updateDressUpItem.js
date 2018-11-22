@@ -9,33 +9,6 @@ module.exports = {
   removeSequence : removeSequence,
   removeAllSequence : removeAllSequence
 }
-
-function getAsync(db, sql, parms){
-  var that = db;
-  return new Promise(function(resolve, reject){
-    db.get(sql, parms, function(err, row){
-      if(err){
-        reject(err);
-      }else{
-        resolve(row);
-      }
-    });
-  });
-}
-function allAsync(db, sql, parms){
-  var that = db;
-  return new Promise(function(resolve, reject){
-    db.all(sql, parms, function(err, rows){
-      if(err){
-        reject(err);
-      }else if(rows==null){
-        resolve([]);
-      }else{
-        resolve(rows);
-      }
-    });
-  });
-}
 function updateAsync(db, sql, parms=[]){
   var that = db;
   return new Promise(function(resolve, reject){
@@ -101,7 +74,7 @@ async function addItem(itemName, value, fileName, rarity){
   //TODO: Probably need a better way overall to handle db connections across the app.
   let pragma = await updateAsync(db, 'PRAGMA foreign_keys=on');
 
-  let sql = 'INSERT INTO DressUpItems (ItemName, Value, Url, Rarity) VALUES(?, ?, ?, ?)';
+  let sql = 'INSERT INTO DressUpItems (ItemName, Value, FileName, Rarity) VALUES(?, ?, ?, ?)';
   let id = await insertAsync(db, sql, [itemName, value, fileName, rarity]);
   db.close();
 

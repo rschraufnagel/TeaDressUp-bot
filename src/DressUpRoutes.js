@@ -110,7 +110,7 @@ async function viewCharacter(message, args) {
       userId = argUserId;
     }
     let items = await getDressUpItem.selectUserCharacterItems(userId);
-    let fileNames = items.map(item=> {return item.Url});
+    let fileNames = items.map(item=> {return item.FileName});
     if(fileNames.length==0){
       throw Error("No items allocated to user character.");
     }
@@ -181,12 +181,12 @@ async function viewitem(message, args){
       throw Error("Item "+ args[0] + " does not exist.");
     }else{
       let baseBody = await getDressUpItem.selectItemById(config.previewBaseBodyId);
-      let images = [item.Url];
+      let images = [item.FileName];
       let keyword_back = "back";
-      if(item.Url.includes(keyword_back)){
-        images.push(baseBody.Url)
+      if(item.FileName.includes(keyword_back)){
+        images.push(baseBody.FileName)
       }else{
-        images.unshift(baseBody.Url); 
+        images.unshift(baseBody.FileName); 
       }
       let buffer1 = await ImageBuilder.getBuffer(images);
       message.channel.send('', {
@@ -206,6 +206,36 @@ async function viewitem(message, args){
  * @param {*} args 
  */
 async function giveItem(message, args){
+  if(config.admins[message.author.id]){
+    try{
+      let userId = message.author.id;
+      if(args.length>1){
+        let argUserId = getUserId(args[1]);
+        if(argUserId!=args[1]){
+          userId = argUserId;
+        }
+      }
+      let success = await addDressUpItem.giveUserItem(userId, args[0]);
+      if(success){
+        Embed.printMessage(message, "Done");
+      }else{
+        Embed.printError(message, "Something didn't work");
+      }
+    }catch(err){
+      console.error('viewCharacter Error : ' + err + " - " + err.stack);
+      Embed.printError(message, err.message?err.message:err);
+    }
+  }else{
+    Embed.printError(message, "You don't have access to this command.");
+  }
+}
+
+/**
+ * Admin command to give an item (Give to another user. Note if the argumetn doesn't match the User id pattern gives to yourself)
+ * @param {*} message 
+ * @param {*} args 
+ */
+async function buildMissingPreviews(message, args){
   if(config.admins[message.author.id]){
     try{
       let userId = message.author.id;

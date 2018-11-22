@@ -12,10 +12,38 @@ module.exports = {
   FilteredItemsByLootBoxIdAndRarity: FilteredItemsByLootBoxIdAndRarity,
   RandomItemBasedOnRarity: RandomItemBasedOnRarity
 }
-function selectItemsByTag(orderby="ItemName", tags) {
-  let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
-  let sqlquery = "Select ItemId,ItemName,Url,Value from DressUpItems";
+function getAsync(db, sql, parms){
+  var that = db;
+  return new Promise(function(resolve, reject){
+    db.get(sql, parms, function(err, row){
+      if(err){
+        reject(err);
+      }else{
+        resolve(row);
+      }
+    });
+  });
+}
+function allAsync(db, sql, parms){
+  var that = db;
+  return new Promise(function(resolve, reject){
+    db.all(sql, parms, function(err, rows){
+      if(err){
+        reject(err);
+      }else if(rows==null){
+        resolve([]);
+      }else{
+        resolve(rows);
+      }
+    });
+  });
+}
 
+
+async function selectItemsByTag(orderby="ItemName", tags) {
+  let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
+
+  let sqlquery = "Select ItemId,ItemName,FileName,Value from DressUpItems";
   let parms = [];
   for(index=0; index<tags.length; index++){
     parms.push("%"+tags[index]+"%");
@@ -25,105 +53,71 @@ function selectItemsByTag(orderby="ItemName", tags) {
     }else{
       sqlquery += " AND"
     }
-    sqlquery += " (ItemName LIKE ? OR Url LIKE ?)";
+    sqlquery += " (ItemName LIKE ? OR FileName LIKE ?)";
   }
   if(tags.length>0){
     sqlquery +=" COLLATE NOCASE";
   }
-
   sqlquery +=" ORDER BY "+orderby+" ASC";
 
-  return new Promise(function(resolve, reject) {
-    db.all(sqlquery, parms, (err, rows) => {
-      if (err) {reject (err);}
-      if(rows==null){
-        resolve([]);
-      }else{
-        resolve(rows);
-      }
-    });
-    db.close();
-  });
+  let rows = await allAsync(db, sqlquery, parms);
+  db.close();
+
+  return rows;
 }
 
-function selectItemById(itemid) {
+async function  selectItemById(itemid) {
   let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
-  let sqlquery = "Select ItemId,ItemName,Url,Value from DressUpItems WHERE ItemId = ?";
-  return new Promise(function(resolve, reject) {
-    db.get(sqlquery, [itemid], (err, row) => {
-      if (err) {reject (err);}
-      resolve(row);
-    });
-    db.close();
-  });
-}
-function selectItemByFileName(fileName) {
-  let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
-  let sqlquery = "Select ItemId,ItemName,Url,Value from DressUpItems WHERE Url = ?";
-  return new Promise(function(resolve, reject) {
-    db.get(sqlquery, [fileName], (err, row) => {
-      if (err) {reject (err);}
-      resolve(row);
-    });
-    db.close();
-  });
+  let sqlquery = "Select ItemId,ItemName,FileName,Value from DressUpItems WHERE ItemId = ?";
+  let row = await getAsync(db, sqlquery, [itemid]);
+  db.close();
+
+  return row;
 }
 
-function selectUserItem(userid, unitid) {
+async function  selectItemByFileName(fileName) {
   let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
-  let sqlquery = "Select DressUpItems.ItemId,Sequence,ItemName,Url,Value from DressUpItems INNER JOIN DiscordUserDressUpItemsOwned ON DiscordUserDressUpItemsOwned.ItemId = DressUpItems.ItemId WHERE UserId = ? AND DressUpItems.ItemId = ?";
-  return new Promise(function(resolve, reject) {
-    db.get(sqlquery, [userid, unitid], (err, row) => {
-      if (err) {reject (err);}
-      resolve(row);
-    });
-    db.close();
-  });
+  let sqlquery = "Select ItemId,ItemName,FileName,Value from DressUpItems WHERE FileName = ?";
+  let row = await getAsync(db, sqlquery, [fileName]);
+  db.close();
+
+  return row;
 }
-function selectUserItems(userid) {
+
+async function  selectUserItem(userid, unitid) {
   let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
-  let sqlquery = "Select DressUpItems.ItemId,Sequence,ItemName,Url,Value,Quantity from DressUpItems INNER JOIN DiscordUserDressUpItemsOwned ON DiscordUserDressUpItemsOwned.ItemId = DressUpItems.ItemId WHERE UserId = ?";
-  return new Promise(function(resolve, reject) {
-    db.all(sqlquery, [userid], (err, rows) => {
-      if (err) {reject (err);}
-      if(rows==null){
-        resolve([]);
-      }else{
-        resolve(rows);
-      }
-    });
-    db.close();
-  });
+  let sqlquery = "Select DressUpItems.ItemId,Sequence,ItemName,FileName,Value from DressUpItems INNER JOIN DiscordUserDressUpItemsOwned ON DiscordUserDressUpItemsOwned.ItemId = DressUpItems.ItemId WHERE UserId = ? AND DressUpItems.ItemId = ?";
+  let row = await getAsync(db, sqlquery, [userid, unitid]);
+  db.close();
+
+  return row;
 }
-function selectUserCharacterValue(userid) {
+
+async function  selectUserItems(userid) {
+  let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
+  let sqlquery = "Select DressUpItems.ItemId,Sequence,ItemName,FileName,Value,Quantity from DressUpItems INNER JOIN DiscordUserDressUpItemsOwned ON DiscordUserDressUpItemsOwned.ItemId = DressUpItems.ItemId WHERE UserId = ?";
+  let rows = await allAsync(db, sqlquery, [userid]);
+  db.close();
+
+  return rows;
+}
+
+async function  selectUserCharacterValue(userid) {
   let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
   let sqlquery = "Select sum(Value) AS Value from DressUpItems INNER JOIN DiscordUserDressUpItemsOwned ON DiscordUserDressUpItemsOwned.ItemId = DressUpItems.ItemId WHERE UserId = ? AND Sequence>0";
-  return new Promise(function(resolve, reject) {
-    db.get(sqlquery, [userid], (err, row) => {
-      if (err) {reject (err);}
-      if(row.Value==null){
-        resolve({Value:0});
-      }else{
-        resolve(row);
-      }
-    });
-    db.close();
-  });
+  let row = await getAsync(db, sqlquery, [userid]);
+  db.close();
+
+  return row;
 }
-function selectUserCharacterItems(userid) {
+
+async function  selectUserCharacterItems(userid) {
   let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
-  let sqlquery = "Select DressUpItems.ItemId,Sequence,ItemName,Url,Value from DressUpItems INNER JOIN DiscordUserDressUpItemsOwned ON DiscordUserDressUpItemsOwned.ItemId = DressUpItems.ItemId WHERE UserId = ? and Sequence is not null ORDER BY Sequence ASC";
-  return new Promise(function(resolve, reject) {
-    db.all(sqlquery, [userid], (err, rows) => {
-      if (err) {reject (err);}
-      if(rows==null){
-        resolve([]);
-      }else{
-        resolve(rows);
-      }
-    });
-    db.close();
-  });
+  let sqlquery = "Select DressUpItems.ItemId,Sequence,ItemName,FileName,Value from DressUpItems INNER JOIN DiscordUserDressUpItemsOwned ON DiscordUserDressUpItemsOwned.ItemId = DressUpItems.ItemId WHERE UserId = ? and Sequence is not null ORDER BY Sequence ASC";
+  let rows = await allAsync(db, sqlquery, [userid]);
+  db.close();
+
+  return rows;
 }
 
 /**
@@ -131,40 +125,25 @@ function selectUserCharacterItems(userid) {
  * @param {number} LootBoxId 
  * @param {string} Rarity
  */
-function FilteredItemsByLootBoxIdAndRarity(LootBoxId, Rarity) {
+async function  FilteredItemsByLootBoxIdAndRarity(LootBoxId, Rarity) {
   let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
-  let sqlquery = "Select DressUpItems.ItemId, ItemName, Value, Url, DropChance from DressUpItems inner join LootBoxItems on DressUpItems.ItemId = LootBoxItems.ItemId where LootBoxItems.LootBoxId = ? and DressUpItems.Rarity = ? Order by DropChance ASC";
-  return new Promise(function(resolve, reject) {
-    db.all(sqlquery, [LootBoxId, Rarity], (err, rows) => {
-      if (err) {reject (err);}
-      if(rows==null){
-        resolve([]);
-      }else{
-        resolve(rows);
-      }
-    });
-    db.close();
-  });
+  let sqlquery = "Select DressUpItems.ItemId, ItemName, Value, FileName, DropChance from DressUpItems inner join LootBoxItems on DressUpItems.ItemId = LootBoxItems.ItemId where LootBoxItems.LootBoxId = ? and DressUpItems.Rarity = ? Order by DropChance ASC";
+  let rows = await allAsync(db, sqlquery, [LootBoxId, Rarity]);
+  db.close();
+
+  return rows;
 }
 
 /**
  * Getting Random Rarity Item from the database)
  * @param {string} Rarity
  */
-function RandomItemBasedOnRarity(Rarity) {
+async function  RandomItemBasedOnRarity(Rarity) {
   let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
-  let sqlquery = "Select DressUpItems.ItemId, ItemName, Value, Url, DropChance from DressUpItems inner join LootBoxItems on DressUpItems.ItemId = LootBoxItems.ItemId where LootBoxItems.LootBoxId = ? and DressUpItems.Rarity = ? Order by DropChance ASC";
-  return new Promise(function(resolve, reject) {
-    db.all(sqlquery, [LootBoxId, Rarity], (err, rows) => {
-      if (err) {reject (err);}
-      if(rows==null){
-        resolve([]);
-      }else{
-        resolve(rows);
-      }
-    });
-    db.close();
-  });
-}
+  let sqlquery = "Select DressUpItems.ItemId, ItemName, Value, FileName, DropChance from DressUpItems inner join LootBoxItems on DressUpItems.ItemId = LootBoxItems.ItemId where LootBoxItems.LootBoxId = ? and DressUpItems.Rarity = ? Order by DropChance ASC";
+  let rows = await allAsync(db, sqlquery, [LootBoxId, Rarity]);
+  db.close();
 
+  return rows;
+}
 
