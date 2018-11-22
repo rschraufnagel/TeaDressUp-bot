@@ -180,7 +180,15 @@ async function viewitem(message, args){
     if(!item){
       throw Error("Item "+ args[0] + " does not exist.");
     }else{
-      let buffer1 = await ImageBuilder.getBuffer([item.Url]);
+      let baseBody = await getDressUpItem.selectItemById(config.previewBaseBodyId);
+      let images = [item.Url];
+      let keyword_back = "back";
+      if(item.Url.includes(keyword_back)){
+        images.push(baseBody.Url)
+      }else{
+        images.unshift(baseBody.Url); 
+      }
+      let buffer1 = await ImageBuilder.getBuffer(images);
       message.channel.send('', {
         files: [buffer1]
       });

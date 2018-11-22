@@ -1,5 +1,6 @@
 {
- "connection":"./database/DressUp.db"
+  "connection":"./database/DressUp.db"
+ ,"previewBaseBodyId" : 1
  ,"pageLength": 8
  ,"colours" : {
      "error" : "0xcc263c"
