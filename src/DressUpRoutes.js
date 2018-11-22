@@ -15,24 +15,27 @@ module.exports = function (message, messageContent = message.content) {
   switch (args[0]) {
     case "viewallitems":
     case "viewallitemsbyname":
-      viewAllItems(message, "ItemName", args.slice(1));
+      printAllItems(message, "ItemName", args.slice(1));
       break;
     case "viewallitemsbyid":
-      viewAllItems(message, "ItemId", args.slice(1));
+      printAllItems(message, "ItemId", args.slice(1));
       break;
     case "vieweq":
     case "viewequips":
-      viewCharacterItems(message, args.slice(1));
+      printCharacterItems(message, args.slice(1));
       break;
     case "viewinventory":
     case "viewinv":
-      viewInventoryItems(message, args.slice(1));
+      printInventoryItems(message, args.slice(1));
       break;
     case "viewitem":
       viewitem(message, args.slice(1));
       break;
     case "viewchar":
       viewCharacter(message, args.slice(1));
+      break;
+    case "charval":
+      printCharacterValue(message, args.slice(1));
       break;
     case "replace":
       replaceItem(message, args.slice(1));
@@ -120,30 +123,53 @@ async function viewCharacter(message, args) {
     Embed.printError(message, err.message?err.message:err);
   }
 }
-async function viewAllItems(message, orderBy, args){
+/**
+ * Print the value of the current user or the given User if provided in the 1st argument.
+ * @param {*} message 
+ * @param {*} args 
+ */
+async function printCharacterValue(message, args) {
+  try{
+    let userId = message.author.id;
+    if(args && args.length>0){
+      let argUserId = getUserId(args[0]);
+      userId = argUserId;
+    }
+    let row = await getDressUpItem.selectUserCharacterValue(userId);
+
+    let username = message.client.users.get(userId).username;
+    Embed.printMessage(message, username + "'s value is " + row.Value);
+  }catch(err){
+    console.error('printCharacterValue Error : ' + err + " - " + err.stack);
+    Embed.printError(message, err.message?err.message:err);
+  }
+}
+
+
+async function printAllItems(message, orderBy, args){
   try{
     let items = await getDressUpItem.selectItemsByTag(orderBy, args);
     Embed.printItems(message, items);  
   }catch(err){
-    console.error('viewAllItems Error : ' + err + " - " + err.stack);
+    console.error('printAllItems Error : ' + err + " - " + err.stack);
     Embed.printError(message, err.message?err.message:err);
   }  
 }
-async function viewCharacterItems(message, args){
+async function printCharacterItems(message, args){
   try{
     let items = await getDressUpItem.selectUserCharacterItems(message.author.id);
     Embed.printItems(message, items);  
   }catch(err){
-    console.error('viewCharacterItems Error : ' + err + " - " + err.stack);
+    console.error('printCharacterItems Error : ' + err + " - " + err.stack);
     Embed.printError(message, err.message?err.message:err);
   }
 }
-async function viewInventoryItems(message, args){
+async function printInventoryItems(message, args){
   try{
     let items = await getDressUpItem.selectUserItems(message.author.id);
     Embed.printInventoryItems(message, items);  
   }catch(err){
-    console.error('viewInventoryItems Error : ' + err + " - " + err.stack);
+    console.error('printInventoryItems Error : ' + err + " - " + err.stack);
     Embed.printError(message, err.message?err.message:err);
   }
 }

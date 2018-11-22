@@ -7,6 +7,7 @@ module.exports = {
   selectItemsByTag : selectItemsByTag,
   selectUserItem : selectUserItem,
   selectUserItems : selectUserItems,
+  selectUserCharacterValue : selectUserCharacterValue,
   selectUserCharacterItems : selectUserCharacterItems,
   FilteredItemsByLootBoxIdAndRarity: FilteredItemsByLootBoxIdAndRarity,
   RandomItemBasedOnRarity: RandomItemBasedOnRarity
@@ -89,6 +90,21 @@ function selectUserItems(userid) {
         resolve([]);
       }else{
         resolve(rows);
+      }
+    });
+    db.close();
+  });
+}
+function selectUserCharacterValue(userid) {
+  let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
+  let sqlquery = "Select sum(Value) AS Value from DressUpItems INNER JOIN DiscordUserDressUpItemsOwned ON DiscordUserDressUpItemsOwned.ItemId = DressUpItems.ItemId WHERE UserId = ? AND Sequence>0";
+  return new Promise(function(resolve, reject) {
+    db.get(sqlquery, [userid], (err, row) => {
+      if (err) {reject (err);}
+      if(row.Value==null){
+        resolve({Value:0});
+      }else{
+        resolve(row);
       }
     });
     db.close();
