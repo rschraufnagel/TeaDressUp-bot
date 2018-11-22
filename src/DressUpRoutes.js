@@ -1,6 +1,6 @@
 const ImageBuilder = require('./img/ImageBuilder');
 const getDressUpItem = require('./db/getDressUpItems');
-const addDressUpItem = require('./db/addDressUpItem');
+const addDressUpItem = require('./db/updateDressUpItem');
 const getLootbox = require('./db/getLootBox');
 const Embed = require('./message/Message');
 const config = require('./config');
