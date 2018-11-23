@@ -1,5 +1,6 @@
 const getDressUpItem = require('./db/getDressUpItems');
 const getLootbox = require('./db/getLootBox');
+const updateDressUpItem = require('./db/updateDressUpItem');
 const Embed = require('./message/Message');
 const Currency = require('./db/Currency');
 const ImageBuilder = require('./img/ImageBuilder');
@@ -48,6 +49,11 @@ module.exports = {
             FoundRarity = true;
             TypeOfRarity = "rare";
         }
+        if(RollForRarityRoll(RarityPool.Masterwork) || !FoundRarity)
+        {
+            FoundRarity = true;
+            TypeOfRarity = "masterwork";
+        }
         if(RollForRarityRoll(RarityPool.Fine) || !FoundRarity)
         {
             FoundRarity = true;
@@ -57,14 +63,21 @@ module.exports = {
             TypeOfRarity = "basic";
         }
 
-        let FilteredItemsByLootBoxIdAndRarity = await getDressUpItem.RandomItemBasedOnRarity(TypeOfRarity);
+        let randomItem = await getDressUpItem.RandomItemBasedOnRarity(lootBoxId, TypeOfRarity);
+        let currencyTaken = await Currency.spendFlowers(userid, lootBoxCost);
+        if(currencyTaken!=1){
+            throw Error("Unable to take Flowers.");
+        }
+        let itemGiven = await updateDressUpItem.giveUserItem(userid, randomItem.ItemId);
+        if(itemGiven!=1){
+            throw Error("Unable to give Item.");
+        }
 
-            let buffer1 = await ImageBuilder.getBuffer(['./img/'+FilteredItemsByLootBoxIdAndRarity.FileName]);
-            message.channel.send('', {
-              files: [buffer1]
-            });
-            Embed.printMessage(message, "You rolled " + FilteredItemsByLootBoxIdAndRarity.ItemName,);
-            //TODO add sql call to subtract currency for users.
+        let buffer1 = await ImageBuilder.getBuffer([randomItem.FileName]);
+        message.channel.send('', {
+            files: [buffer1]
+        });
+        Embed.printMessage(message, "You rolled " + randomItem.ItemName);
     }
     else 
     {

@@ -60,7 +60,7 @@ function selectLootBoxCost(lootBoxId){
 
 function selectRarityPoolsConfig(lootBoxId){
   let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
-  let sqlquery = "Select Basic, Fine, Rare, Exotic, Legendary, Special from RarityPools where lootboxid = ?";
+  let sqlquery = "Select Basic, Fine, Masterwork, Rare, Exotic, Legendary, Special from RarityPools where lootboxid = ?";
   return new Promise(function(resolve, reject) {
     db.all(sqlquery, [lootBoxId], (err, rows) => {
       if (err) {reject (err);}
