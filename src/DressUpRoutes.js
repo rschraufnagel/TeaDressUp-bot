@@ -1,6 +1,6 @@
 const ImageBuilder = require('./img/ImageBuilder');
 const getDressUpItem = require('./db/getDressUpItems');
-const addDressUpItem = require('./db/updateDressUpItem');
+const updateDressUpItem = require('./db/updateDressUpItem');
 const getLootbox = require('./db/getLootBox');
 const Embed = require('./message/Message');
 const config = require('./config');
@@ -55,6 +55,9 @@ module.exports = function (message, messageContent = message.content) {
       break;
     case "addnewitem":
         addNewItem(message, args.slice(1));
+        break;
+    case "setpreviews":
+        buildMissingPreviews(message, args.slice(1));
         break;
     case "viewlb":
     if (args.length > 1)
@@ -181,22 +184,17 @@ async function viewitem(message, args){
       throw Error("Item "+ args[0] + " does not exist.");
     }else{
       let baseBody = await getDressUpItem.selectItemById(config.previewBaseBodyId);
-      let images = [item.FileName];
-      let keyword_back = "back";
-      if(item.FileName.includes(keyword_back)){
-        images.push(baseBody.FileName)
-      }else{
-        images.unshift(baseBody.FileName); 
-      }
-      let buffer1 = await ImageBuilder.getBuffer(images);
-      message.channel.send('', {
+      let imageNames = ImageBuilder.getPreviewSequence(baseBody.FileName, [item.FileName]);
+      let buffer1 = await ImageBuilder.getBuffer(imageNames);
+      let v = await message.channel.send('', {
         files: [buffer1]
       });
+
     }
   }catch(err){
     console.error('viewitem Error : ' + err + " - " + err.stack);
     Embed.printError(message, err.message?err.message:err);
-  }  
+  }
 }
 
 
@@ -215,7 +213,7 @@ async function giveItem(message, args){
           userId = argUserId;
         }
       }
-      let success = await addDressUpItem.giveUserItem(userId, args[0]);
+      let success = await updateDressUpItem.giveUserItem(userId, args[0]);
       if(success){
         Embed.printMessage(message, "Done");
       }else{
@@ -238,21 +236,27 @@ async function giveItem(message, args){
 async function buildMissingPreviews(message, args){
   if(config.admins[message.author.id]){
     try{
-      let userId = message.author.id;
-      if(args.length>1){
-        let argUserId = getUserId(args[1]);
-        if(argUserId!=args[1]){
-          userId = argUserId;
+      let baseBody = await getDressUpItem.selectItemById(config.previewBaseBodyId);
+      let items = await getDressUpItem.selectItemsMissingPreview();
+      if(items){
+        for(let i=0; i<items.length; i++){
+          let item = items[i];
+  
+          let imageNames = ImageBuilder.getPreviewSequence(baseBody.FileName, [item.FileName]);
+          let buffer1 = await ImageBuilder.getBuffer(imageNames);
+          let previewMessage = await message.channel.send('', {files: [buffer1]});
+          
+          let attachmentFile = previewMessage.attachments.first();
+          let url = attachmentFile.url;
+          updateDressUpItem.setItemPreviewURL(item.ItemId, url);
         }
-      }
-      let success = await addDressUpItem.giveUserItem(userId, args[0]);
-      if(success){
-        Embed.printMessage(message, "Done");
+        Embed.printMessage(message, "Previews Loaded for " + items.length + " items.");
       }else{
-        Embed.printError(message, "Something didn't work");
+        Embed.printMessage(message, "No Items to load Previews");
       }
+      
     }catch(err){
-      console.error('viewCharacter Error : ' + err + " - " + err.stack);
+      console.error('buildMissingPreviews Error : ' + err + " - " + err.stack);
       Embed.printError(message, err.message?err.message:err);
     }
   }else{
@@ -290,9 +294,9 @@ async function addNewItem(message, args){
         throw Error(fileName + " already exists.");
       }
 
-      ImageBuilder.downloadImage(attachmentFile.fileName, fileName, async function(){
+      ImageBuilder.downloadImage(attachmentFile.url, fileName, async function(){
         try{
-          let index = await addDressUpItem.addItem(itemName, value, fileName, itemRariry);
+          let index = await updateDressUpItem.addItem(itemName, value, fileName, itemRariry);
           Embed.printMessage(message, "Item added at index: " + index);
         }catch(err){
           console.error('downloadImageCallback Error : ' + err + " - " + err.stack);
@@ -325,7 +329,7 @@ async function equipItem(message, args){
       let errorMsg = "";
       let totalUpdates = 0;
       if(itemsToEquip.length>0){
-        let updateResults = await addDressUpItem.addNextSequences(message.author.id, itemsToEquip);
+        let updateResults = await updateDressUpItem.addNextSequences(message.author.id, itemsToEquip);
         let totalUpdates = updateResults.reduce((x, y) => x + y);
 
         if(totalUpdates!= itemsToEquip.length){
@@ -373,7 +377,7 @@ async function unEquipItem(message, args){
     if(!item){
       throw Error("You do not own item "+ args[0]);
     }else if(item.Sequence>0){
-      let updateCount = await addDressUpItem.removeSequence(message.author.id, item.Sequence);
+      let updateCount = await updateDressUpItem.removeSequence(message.author.id, item.Sequence);
       viewCharacter(message)
     }else{
       throw Error("Item "+ args[0] + " is not currently equipped on your character.");
@@ -395,7 +399,7 @@ async function replaceItem(message, args){
     }else if(!newItem){
       throw Error("You do not own item "+ args[1]);
     }else{
-      let updateCount = await addDressUpItem.swapSequences(message.author.id, oldItem, newItem);
+      let updateCount = await updateDressUpItem.swapSequences(message.author.id, oldItem, newItem);
       viewCharacter(message)
     }
 
@@ -412,7 +416,7 @@ async function replaceItem(message, args){
  */
 async function unEquipAllItems(message, args){
   try{
-    let updateCount = await addDressUpItem.removeAllSequence(message.author.id);
+    let updateCount = await updateDressUpItem.removeAllSequence(message.author.id);
 
     Embed.printMessage(message, "Your character has been cleared.");
   }catch(err){

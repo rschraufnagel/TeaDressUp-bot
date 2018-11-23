@@ -2,6 +2,7 @@ const sqlite3 = require('sqlite3').verbose();
 const config = require('../config');
 
 module.exports = {
+  selectItemsMissingPreview : selectItemsMissingPreview,
   selectItemById : selectItemById,
   selectItemByFileName : selectItemByFileName,
   selectItemsByTag : selectItemsByTag,
@@ -61,6 +62,15 @@ async function selectItemsByTag(orderby="ItemName", tags) {
   sqlquery +=" ORDER BY "+orderby+" ASC";
 
   let rows = await allAsync(db, sqlquery, parms);
+  db.close();
+
+  return rows;
+}
+
+async function  selectItemsMissingPreview() {
+  let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
+  let sqlquery = "Select ItemId,ItemName,FileName,Value from DressUpItems WHERE PreviewURL is null limit 20 ";
+  let rows = await allAsync(db, sqlquery, []);
   db.close();
 
   return rows;

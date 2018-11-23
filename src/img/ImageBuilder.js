@@ -2,25 +2,34 @@ const sharp = require('sharp');
 const fs = require('fs');
 const request = require('request-promise-native');
 
-
 module.exports = {
+  getPreviewSequence : getPreviewSequence,
   downloadImage : downloadImage,
   getBuffer : getBuffer
 }
 
-function downloadImage(fileName, imageName, callbackFunction){
-  request.head(fileName, function(err, response, body){
-    console.log('content-type:', response.headers['content-type']);
-    console.log('content-length:', response.headers['content-length']);
-
-    request(fileName).pipe(fs.createWriteStream('./img/input/'+imageName)).on('close',callbackFunction);
+function downloadImage(url, imageName, callbackFunction){
+  request.head(url, function(err, response, body){
+    request(url).pipe(fs.createWriteStream('./img/input/'+imageName)).on('close',callbackFunction);
   });
-  console.log("Done Outer");
 }
 
-
-function getPreviewSequence(fileNames){
-  
+/**
+ * Return an array of file names where the given body is inbetween back & foreground items
+ */
+function getPreviewSequence(previewBodyFileName, previewFileNames){
+  let background = [];
+  let foreground = [];
+  let keyword_back = "back";
+  for(let i=0; i<previewFileNames.length; i++){
+    if(previewFileNames[i].includes(keyword_back)){
+      background.push(previewFileNames[i]);
+    }else{
+      foreground.push(previewFileNames[i]);
+    }
+  }
+  background.push(previewBodyFileName);
+  return background.concat(foreground);
 }
 
 /**

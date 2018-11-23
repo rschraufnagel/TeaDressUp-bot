@@ -3,6 +3,7 @@ const config = require('../config');
 
 module.exports = {
   addItem : addItem,
+  setItemPreviewURL : setItemPreviewURL,
   giveUserItem : giveUserItem,
   addNextSequences : addNextSequences,
   swapSequences : swapSequences,
@@ -79,6 +80,21 @@ async function addItem(itemName, value, fileName, rarity){
   db.close();
 
   return id;
+}
+
+async function setItemPreviewURL(itemId, previewURL){
+  let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
+  //SQLITE by default doesn't load enforcing foreign key constraints (turn it on).
+  //TODO: Probably need a better way overall to handle db connections across the app.
+  let pragma = await updateAsync(db, 'PRAGMA foreign_keys=on');
+
+  let sql = 'UPDATE DressUpItems set PreviewURL = ? WHERE ItemId = ?';
+  let updateCount = await updateAsync(db, sql, [previewURL, itemId]);
+  if(updateCount<1){
+    throw Error("Item " + itemId + " doesn't exist.");
+  }
+  db.close();
+  return true;
 }
 
 /**
