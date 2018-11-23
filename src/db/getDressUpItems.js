@@ -10,7 +10,6 @@ module.exports = {
   selectUserItems : selectUserItems,
   selectUserCharacterValue : selectUserCharacterValue,
   selectUserCharacterItems : selectUserCharacterItems,
-  FilteredItemsByLootBoxIdAndRarity: FilteredItemsByLootBoxIdAndRarity,
   RandomItemBasedOnRarity: RandomItemBasedOnRarity
 }
 function getAsync(db, sql, parms){
@@ -131,29 +130,16 @@ async function  selectUserCharacterItems(userid) {
 }
 
 /**
- * Getting Filtered Items from the database)
- * @param {number} LootBoxId 
- * @param {string} Rarity
- */
-async function  FilteredItemsByLootBoxIdAndRarity(LootBoxId, Rarity) {
-  let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
-  let sqlquery = "Select DressUpItems.ItemId, ItemName, Value, FileName, DropChance from DressUpItems inner join LootBoxItems on DressUpItems.ItemId = LootBoxItems.ItemId where LootBoxItems.LootBoxId = ? and DressUpItems.Rarity = ? Order by DropChance ASC";
-  let rows = await allAsync(db, sqlquery, [LootBoxId, Rarity]);
-  db.close();
-
-  return rows;
-}
-
-/**
  * Getting Random Rarity Item from the database)
+ * @param {int} LootBoxId
  * @param {string} Rarity
  */
-async function  RandomItemBasedOnRarity(Rarity) {
+async function  RandomItemBasedOnRarity(LootBoxId, Rarity) {
   let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
-  let sqlquery = "Select DressUpItems.ItemId, ItemName, Value, FileName, DropChance from DressUpItems inner join LootBoxItems on DressUpItems.ItemId = LootBoxItems.ItemId where LootBoxItems.LootBoxId = ? and DressUpItems.Rarity = ? Order by DropChance ASC";
-  let rows = await allAsync(db, sqlquery, [LootBoxId, Rarity]);
+  let sqlquery = "Select DressUpItems.ItemId, ItemName, Value, FileName from DressUpItems inner join LootBoxItems on DressUpItems.ItemId = LootBoxItems.ItemId where LootBoxItems.LootBoxId = ? and DressUpItems.Rarity = ? Order by random() limit 1";
+  let row = await getAsync(db, sqlquery, [LootBoxId, Rarity]);
   db.close();
 
-  return rows;
+  return row;
 }
 
