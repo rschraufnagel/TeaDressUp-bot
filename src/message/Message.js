@@ -79,7 +79,7 @@ module.exports.printLootBoxItems = async function (message, lootBoxItems, p1=1, 
   var response = await message.channel.send(msgEmbed);
   
   if (config.pageLength < lootBoxItems.length) {
-    Paginate.addListeners(message, response, p1, lootboxes, title, lootBoxItemsEmbed);
+    Paginate.addListeners(message, response, p1, lootBoxItems, title, lootBoxItemsEmbed);
   }
 }
 

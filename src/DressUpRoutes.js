@@ -450,7 +450,7 @@ async function buyLootBox(message, args){
     lootBox.BuyLootBox(message, message.author.id, args[0]);
   }
   catch(err){
-    console.error('viewCharacter Error : ' + err + " - " + err.stack);
+    console.error('buyLootBox Error : ' + err + " - " + err.stack);
     Embed.printError(message, err.message?err.message:err);
   }
 }
