@@ -2,16 +2,16 @@ const sqlite3 = require('sqlite3').verbose();
 const config = require('../config');
 
 module.exports = {
-  selectLootBoxItems : selectLootBoxItems,
+  selectLootSpecialItems : selectLootSpecialItems,
   selectAllLootBoxes : selectAllLootBoxes,
-  selectLootBoxCost : selectLootBoxCost,
-  selectRarityPoolsConfig: selectRarityPoolsConfig
+  selectLootBox : selectLootBox,
+  selectBoxRarityPool: selectBoxRarityPool
 }
 
 //Retrieve All Loot Box Items
-function selectLootBoxItems(lootBoxId) {
+function selectLootSpecialItems(lootBoxId) {
       let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
-      let sqlquery = "select * from LootBoxItems inner join DressUpItems on LootBoxItems.ItemId = DressUpItems.ItemId where LootBoxItems.LootBoxId = ?"
+      let sqlquery = "select * from LootBoxSpecialItem inner join DressUpItems on LootBoxSpecialItem.ItemId = DressUpItems.ItemId where LootBoxSpecialItem.LootBoxId = ?"
       return new Promise(function(resolve, reject) {
         db.all(sqlquery, [lootBoxId], (err, rows) => {
           if (err) {reject (err);}
@@ -28,7 +28,7 @@ function selectLootBoxItems(lootBoxId) {
   //Retrieve All Loot boxes
 function selectAllLootBoxes() {
   let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
-  let sqlquery = "Select LootBoxName, LootBoxId from Lootboxes";
+  let sqlquery = "Select LootBoxName, LootBoxId, Cost, Basic, Fine, Masterwork, Rare, Exotic, Legendary, Special from LootBox LEFT JOIN RarityPool ON LootBox.RarityPoolId = RarityPool.RarityPoolId";
   return new Promise(function(resolve, reject) {
     db.all(sqlquery, (err, rows) => {
       if (err) {reject (err);}
@@ -42,33 +42,25 @@ function selectAllLootBoxes() {
   });
 }
 
-function selectLootBoxCost(lootBoxId){
+function selectLootBox(lootBoxId){
   let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
-  let sqlquery = "Select * from Lootboxes where lootboxid = ?";
+  let sqlquery = "Select * from LootBox LEFT JOIN RarityPool ON LootBox.RarityPoolId = RarityPool.RarityPoolId where LootBoxId = ?";
   return new Promise(function(resolve, reject) {
-    db.all(sqlquery, [lootBoxId], (err, rows) => {
+    db.get(sqlquery, [lootBoxId], (err, row) => {
       if (err) {reject (err);}
-      if(rows==null){
-        resolve([]);
-      }else{
-        resolve(rows);
-      }
+      resolve(row);
     });
     db.close();
   });
 }
 
-function selectRarityPoolsConfig(lootBoxId){
+function selectBoxRarityPool(lootBoxId){
   let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
-  let sqlquery = "Select Basic, Fine, Masterwork, Rare, Exotic, Legendary, Special from RarityPools where lootboxid = ?";
+  let sqlquery = "Select Basic, Fine, Masterwork, Rare, Exotic, Legendary, Special from RarityPool INNER JOIN LootBox ON LootBox.RarityPoolId = RarityPool.RarityPoolId  where LootBoxId = ?";
   return new Promise(function(resolve, reject) {
-    db.all(sqlquery, [lootBoxId], (err, rows) => {
+    db.get(sqlquery, [lootBoxId], (err, row) => {
       if (err) {reject (err);}
-      if(rows==null){
-        resolve([]);
-      }else{
-        resolve(rows);
-      }
+      resolve(row);
     });
     db.close();
   });

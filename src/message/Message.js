@@ -42,44 +42,82 @@ function inventoryItemEmbed(msgEmbed, items) {
   return newEmbed;
 }
 
+module.exports.printLootBox = async function(message, lootbox){
+  let text = "**"+lootbox.LootBoxName + "** (#"+lootbox.LootBoxId+")";
+  text += "\n**Cost:** "+lootbox.Cost + " :cherry_blossom:";
+  text += "\n__**Box Contents:**__";
+  if(lootbox.Basic){
+    //No white Heart :(
+      text += "\n`⚪` Basic Items"
+  }
+  if(lootbox.Fine){
+    text += "\n`💙` Fine Items"
+  }
+  if(lootbox.Masterwork){
+    text += "\n`💚` Masterwork Items"
+  }
+  if(lootbox.Rare){
+    text += "\n`💛` Rare Items"
+  }
+  if(lootbox.Exotic){
+    text += "\n`🧡` Exotic Items"
+  }
+  if(lootbox.Legendary){
+    text += "\n`💜` Legendary Items"
+  }
+  if(lootbox.Special){
+    text += "\n`🌟` Specialty Items"
+  }
+  var msg = {
+    embed: {
+      color: parseInt(config.colours.normal),
+      description: text
+    }
+  }
+  message.channel.send(msg);
+}
 
-function lootBoxEmbed(msgEmbed, lootboxes){
+function lootBoxListEmbed(msgEmbed, lootboxes){
   var newEmbed = msgEmbed;
   for (var i = 0; i < lootboxes.length; i++) {
     var lootbox = lootboxes[i];
     
-    var details = "**Lootbox Id:** " + lootbox.LootBoxId;
-    newEmbed.addField(lootbox.LootBoxName, details + "\n---------------------------------------------", true);
-  return newEmbed;
-  }
-}
-
-function lootBoxItemsEmbed(msgEmbed, lootBoxItems){
-  var newEmbed = msgEmbed;
-  for (var i = 0; i < lootBoxItems.length; i++) {
-    var lootBoxItem = lootBoxItems[i];
-    
-    var details = "**Drop Chance:** " + lootBoxItem.DropChance;
-    newEmbed.addField(lootBoxItem.ItemName, details + "\n---------------------------------------------", true);
+    var details = "**"+lootbox.Cost + "** :cherry_blossom:";
+    details += "\n**__Loot:__** `"
+    if(lootbox.Basic){
+      //No white Heart :(
+      details += "⚪"
+    }
+    if(lootbox.Fine){
+      details += "💙"
+    }
+    if(lootbox.Masterwork){
+      details += "💚"
+    }
+    if(lootbox.Rare){
+      details += "💛"
+    }
+    if(lootbox.Exotic){
+      details += "🧡"
+    }
+    if(lootbox.Legendary){
+      details += "💜"
+    }
+    if(lootbox.Special){
+      details += "🌟"
+    }
+    details += "`"
+    newEmbed.addField(lootbox.LootBoxId + ". " + lootbox.LootBoxName, details + "\n---------------------------------------------", true);
   }
   return newEmbed;
 }
 
 module.exports.printLootboxes = async function (message, lootboxes, p1=1, title="Loot boxes") {
-  var msgEmbed = Paginate.createEmbedPage(p1, lootboxes, title, lootBoxEmbed)
+  var msgEmbed = Paginate.createEmbedPage(p1, lootboxes, title, lootBoxListEmbed)
   var response = await message.channel.send(msgEmbed);
   
   if (config.pageLength < lootboxes.length) {
-    Paginate.addListeners(message, response, p1, lootboxes, title, lootBoxEmbed);
-  }
-}
-
-module.exports.printLootBoxItems = async function (message, lootBoxItems, p1=1, title="Basic Lootbox Contains") {
-  var msgEmbed = Paginate.createEmbedPage(p1, lootBoxItems, title, lootBoxItemsEmbed)
-  var response = await message.channel.send(msgEmbed);
-  
-  if (config.pageLength < lootBoxItems.length) {
-    Paginate.addListeners(message, response, p1, lootBoxItems, title, lootBoxItemsEmbed);
+    Paginate.addListeners(message, response, p1, lootboxes, title, lootBoxListEmbed);
   }
 }
 

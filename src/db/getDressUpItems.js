@@ -10,7 +10,8 @@ module.exports = {
   selectUserItems : selectUserItems,
   selectUserCharacterValue : selectUserCharacterValue,
   selectUserCharacterItems : selectUserCharacterItems,
-  RandomItemBasedOnRarity: RandomItemBasedOnRarity
+  getRandomRarityItem: getRandomRarityItem,
+  getRandomSpecialItem : getRandomSpecialItem
 }
 function getAsync(db, sql, parms){
   var that = db;
@@ -134,12 +135,18 @@ async function  selectUserCharacterItems(userid) {
  * @param {int} LootBoxId
  * @param {string} Rarity
  */
-async function  RandomItemBasedOnRarity(LootBoxId, Rarity) {
+async function  getRandomRarityItem(rarity) {
   let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
-  let sqlquery = "Select DressUpItems.ItemId, ItemName, Value, FileName from DressUpItems inner join LootBoxItems on DressUpItems.ItemId = LootBoxItems.ItemId where LootBoxItems.LootBoxId = ? and DressUpItems.Rarity = ? Order by random() limit 1";
-  let row = await getAsync(db, sqlquery, [LootBoxId, Rarity]);
+  let sqlquery = "Select DressUpItems.ItemId, ItemName, Value, FileName from DressUpItems where DressUpItems.Rarity = ? Order by random() limit 1";
+  let row = await getAsync(db, sqlquery, [rarity]);
   db.close();
-
+  return row;
+}
+async function getRandomSpecialItem(lootBoxId){
+  let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
+  let sqlquery = "Select DressUpItems.ItemId, ItemName, Value, FileName from DressUpItems inner join LootBoxSpecialItem on DressUpItems.ItemId = LootBoxSpecialItem.ItemId where LootBoxSpecialItem.LootBoxId = ? Order by random() limit 1";
+  let row = await getAsync(db, sqlquery, [LootBoxId]);
+  db.close();
   return row;
 }
 

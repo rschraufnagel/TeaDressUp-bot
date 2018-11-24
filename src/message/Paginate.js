@@ -23,6 +23,7 @@ function createEmbedPage(page, items, title, itemEmbedFunction){
     curPage=0;
   }
   var msgEmbed = new Discord.RichEmbed();
+  msgEmbed.setColor(parseInt(config.colours.normal));
   msgEmbed.setTitle("**__" + title + "     p. " +curPage + "/" + maxPage + "__**");
   msgEmbed = itemEmbedFunction(msgEmbed, printItems);
   return msgEmbed;

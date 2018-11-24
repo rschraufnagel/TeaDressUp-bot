@@ -16,12 +16,11 @@ module.exports = {
     let userCurrency = await Currency.getFlowers(userid);
     var currentCurrency = userCurrency[0].Amount;
     //get lootbox cost
-    let lootBoxinfo = await getLootbox.selectLootBoxCost(lootBoxId);
-    var lootBoxCost = lootBoxinfo[0].Cost;
+    let lootBoxinfo = await getLootbox.selectLootBox(lootBoxId);
+    var lootBoxCost = lootBoxinfo.Cost;
     //get Rarities
-    let RarityPool = await getLootbox.selectRarityPoolsConfig(lootBoxId);
-    var FoundRarity = false;
-    var TypeOfRarity;
+    let RarityPool = await getLootbox.selectBoxRarityPool(lootBoxId);
+    var foundItem;
 
     currentCurrency = currentCurrency - lootBoxCost;
 
@@ -31,53 +30,52 @@ module.exports = {
         //Checking if user rolls for box.
         if(RollForRarityRoll(RarityPool.Special))
         {
-            FoundRarity = true;
-            TypeOfRarity = "special";
+            foundItem = await getDressUpItem.getRandomRarityItem(lootBoxId);
         }
-        if(RollForRarityRoll(RarityPool.Legendary) || !FoundRarity)
+        if(!foundItem && RollForRarityRoll(RarityPool.Legendary))
         {
-            FoundRarity = true;
-            TypeOfRarity = "legendary";
+            foundItem = await getDressUpItem.getRandomRarityItem("legendary");
         }
-        if(RollForRarityRoll(RarityPool.Exotic) || !FoundRarity)
+        if(!foundItem && RollForRarityRoll(RarityPool.Exotic))
         {
-            FoundRarity = true;
-            TypeOfRarity = "exotic";
+            foundItem = await getDressUpItem.getRandomRarityItem("exotic");
         }
-        if(RollForRarityRoll(RarityPool.Rare) || !FoundRarity)
+        if(!foundItem && RollForRarityRoll(RarityPool.Rare))
         {
-            FoundRarity = true;
-            TypeOfRarity = "rare";
+            foundItem = await getDressUpItem.getRandomRarityItem("rare");
         }
-        if(RollForRarityRoll(RarityPool.Masterwork) || !FoundRarity)
+        if(!foundItem && RollForRarityRoll(RarityPool.Masterwork))
         {
-            FoundRarity = true;
-            TypeOfRarity = "masterwork";
+            foundItem = await getDressUpItem.getRandomRarityItem("masterwork");
         }
-        if(RollForRarityRoll(RarityPool.Fine) || !FoundRarity)
+        if(!foundItem && RollForRarityRoll(RarityPool.Fine))
         {
-            FoundRarity = true;
-            TypeOfRarity = "fine";
+            foundItem = await getDressUpItem.getRandomRarityItem("fine");
         }
-        else{
-            TypeOfRarity = "basic";
+        else
+        {
+            foundItem = await getDressUpItem.getRandomRarityItem("basic");
         }
 
-        let randomItem = await getDressUpItem.RandomItemBasedOnRarity(lootBoxId, TypeOfRarity);
+        if(!foundItem){
+            throw Error("No item found in the box... Ooops");
+        }
+
         let currencyTaken = await Currency.spendFlowers(userid, lootBoxCost);
         if(currencyTaken!=1){
             throw Error("Unable to take Flowers.");
         }
-        let itemGiven = await updateDressUpItem.giveUserItem(userid, randomItem.ItemId);
+
+        let itemGiven = await updateDressUpItem.giveUserItem(userid, foundItem.ItemId);
         if(itemGiven!=1){
             throw Error("Unable to give Item.");
         }
 
-        let buffer1 = await ImageBuilder.getBuffer([randomItem.FileName]);
+        let buffer1 = await ImageBuilder.getBuffer([foundItem.FileName]);
         message.channel.send('', {
             files: [buffer1]
         });
-        Embed.printMessage(message, "You rolled " + randomItem.ItemName);
+        Embed.printMessage(message, "You rolled " + foundItem.ItemName);
     }
     else 
     {
@@ -89,12 +87,15 @@ module.exports = {
   function RollForRarityRoll(dropChance)
   {
     var dropChanceRoll = Math.floor((Math.random()*100) + 1);
-    if(dropChance <= dropChanceRoll)
+    console.log(dropChance + " >= " + dropChanceRoll);
+    if(dropChance >= dropChanceRoll)
     {
+        console.log("True");
         return true;
     }
     else
     {
+        console.log("False");
         return false;
     }
   }

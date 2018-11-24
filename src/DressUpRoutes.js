@@ -152,7 +152,7 @@ async function printCharacterValue(message, args) {
 async function printAllItems(message, orderBy, args){
   try{
     let items = await getDressUpItem.selectItemsByTag(orderBy, args);
-    Embed.printItems(message, items);  
+    Embed.printItems(message, items);
   }catch(err){
     console.error('printAllItems Error : ' + err + " - " + err.stack);
     Embed.printError(message, err.message?err.message:err);
@@ -437,8 +437,17 @@ async function viewlootboxes(message, args) {
 
 async function viewLootBoxItems(message, args) {
   try{
-    let lootboxes = await getLootbox.selectLootBoxItems(args[0]);
-    Embed.printLootBoxItems(message, lootboxes);
+    let lootbox = await getLootbox.selectLootBox(args[0]);
+    if(lootbox){
+      let lootboxSpecialItems = await getLootbox.selectLootSpecialItems(args[0]);
+      Embed.printLootBox(message, lootbox);
+      if(lootbox.Special){
+        Embed.printItems(message, lootboxSpecialItems, 1, lootbox.LootBoxName + " Specialty Items");
+      }
+    }
+    else{
+      Embed.printError(message, "Lootbox " + args[0] + " doesn't exist.");
+    }
   }catch(err){
     console.error('viewCharacter Error : ' + err + " - " + err.stack);
     Embed.printError(message, err.message?err.message:err);
