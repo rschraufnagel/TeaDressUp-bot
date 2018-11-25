@@ -206,19 +206,25 @@ async function viewitem(message, args){
 async function giveItem(message, args){
   if(config.admins[message.author.id]){
     try{
-      let userId = message.author.id;
-      if(args.length>1){
-        let argUserId = getUserId(args[1]);
-        if(argUserId!=args[1]){
-          userId = argUserId;
+      let userId = getUserId(args[0]);
+      if(args[0]==userId){
+        //User id passed through discord should be <###> if after parsing we get the same value then this wasn't an user id.
+        throw Error("First Argument must be @user to give the items to.");
+      }
+      
+      let itemsToAdd = args.slice(1);
+      for(let i=0; i<itemsToAdd.length; i++){
+        let itemToAdd = itemsToAdd[i];
+        try{
+          let success = await updateDressUpItem.giveUserItem(userId, itemToAdd);  
+          if(!success){
+            throw Error("Something didn't work");
+          }
+        }catch(addError){
+          throw Error("Error giving item "+ itemToAdd + " : " + addError);
         }
       }
-      let success = await updateDressUpItem.giveUserItem(userId, args[0]);
-      if(success){
-        Embed.printMessage(message, "Done");
-      }else{
-        Embed.printError(message, "Something didn't work");
-      }
+      Embed.printMessage(message, "Done");
     }catch(err){
       console.error('viewCharacter Error : ' + err + " - " + err.stack);
       Embed.printError(message, err.message?err.message:err);
