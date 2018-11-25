@@ -53,6 +53,9 @@ module.exports = function (message, messageContent = message.content) {
     case "giveitem":
       giveItem(message, args.slice(1));
       break;
+    case "takeitem":
+      takeItem(message, args.slice(1));
+      break;
     case "addnewitem":
         addNewItem(message, args.slice(1));
         break;
@@ -199,9 +202,9 @@ async function viewitem(message, args){
 
 
 /**
- * Admin command to give an item (Give to another user. Note if the argumetn doesn't match the User id pattern gives to yourself)
+ * Admin command to give items
  * @param {*} message 
- * @param {*} args 
+ * @param {*} args (first arg must be the user id to give to, all following args are the ids of the items to give)
  */
 async function giveItem(message, args){
   if(config.admins[message.author.id]){
@@ -226,13 +229,57 @@ async function giveItem(message, args){
       }
       Embed.printMessage(message, "Done");
     }catch(err){
-      console.error('viewCharacter Error : ' + err + " - " + err.stack);
+      console.error('giveItem Error : ' + err + " - " + err.stack);
       Embed.printError(message, err.message?err.message:err);
     }
   }else{
     Embed.printError(message, "You don't have access to this command.");
   }
 }
+
+/**
+ *Admin command to take items
+ * @param {*} message 
+ * @param {*} args (first arg must be the user id to take from, all following args are the ids of the items to give)
+ */
+async function takeItem(message, args){
+  if(config.admins[message.author.id]){
+    try{
+      let userId = getUserId(args[0]);
+      if(args[0]==userId){
+        //User id passed through discord should be <###> if after parsing we get the same value then this wasn't an user id.
+        throw Error("First Argument must be @user to take the items from.");
+      }
+      
+      let itemsToTake = args.slice(1);
+      for(let i=0; i<itemsToTake.length; i++){
+        let itemToTake = itemsToTake[i];
+        try{
+          let success = await updateDressUpItem.takeUserItem(userId, itemToTake);  
+          if(!success){
+            let userItem = await getDressUpItem.selectUserItem(userId, itemToTake);
+            if(userItem){
+              throw Error("Cannot take item as it is currently equipped.");
+            }else{
+              throw Error("User doesn't have item to take.");
+            }
+          }
+        }catch(removeError){
+          let newError = "Error taking item "+ itemToTake + " : ";
+          newError += removeError.message?removeError.message:removeError
+          throw Error(newError);
+        }
+      }
+      Embed.printMessage(message, "Done");
+    }catch(err){
+      console.error('takeItem Error : ' + err + " - " + err.stack);
+      Embed.printError(message, err.message?err.message:err);
+    }
+  }else{
+    Embed.printError(message, "You don't have access to this command.");
+  }
+}
+
 
 /**
  * Admin command to give an item (Give to another user. Note if the argumetn doesn't match the User id pattern gives to yourself)
@@ -469,3 +516,4 @@ async function buyLootBox(message, args){
     Embed.printError(message, err.message?err.message:err);
   }
 }
+

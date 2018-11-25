@@ -5,6 +5,7 @@ module.exports = {
   addItem : addItem,
   setItemPreviewURL : setItemPreviewURL,
   giveUserItem : giveUserItem,
+  takeUserItem : takeUserItem,
   addNextSequences : addNextSequences,
   swapSequences : swapSequences,
   removeSequence : removeSequence,
@@ -60,6 +61,29 @@ async function giveUserItem(userId, itemId){
   db.close();
 
   return true;
+}
+/**
+ * Take an item away from a user.  Only allowed to take an item if it is not currently equipped (ie. if the user only has 1 and it is equipped do not take.)
+ */
+async function takeUserItem(userId, itemId){
+  let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
+  //SQLITE by default doesn't load enforcing foreign key constraints (turn it on).
+  //TODO: Probably need a better way overall to handle db connections across the app.
+  let pragma = await updateAsync(db, 'PRAGMA foreign_keys=on');
+
+  let sqlDelete = 'DELETE FROM DiscordUserDressUpItemsOwned WHERE UserId=? AND ItemId=? AND Quantity = 1 AND Sequence is NULL';
+  let sqlUpdated = await updateAsync(db, sqlDelete, [userId, itemId]);
+  if(sqlUpdated==0){
+    let sqlUpdate = 'UPDATE DiscordUserDressUpItemsOwned SET Quantity = Quantity-1 WHERE UserId = ? AND ItemId = ? AND Quantity != 1';
+    sqlUpdated = await updateAsync(db, sqlUpdate, [userId, itemId]);
+  }
+  db.close();
+
+  if(sqlUpdated==0){
+    return false; //Nothing was updated
+  }else{
+    return true; //Something was updated
+  }
 }
 
 /**
