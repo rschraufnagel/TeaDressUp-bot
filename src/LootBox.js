@@ -27,44 +27,39 @@ module.exports = {
     //Check if user has the money for said box.
     if(currentCurrency > 0)
     {
-        //Checking if user rolls for box.
-        if(RollForRarityRoll(RarityPool.Special))
-        {
+        var rngNum = Math.floor((Math.random()*100));
+        //sample: legendary(0), exotic(10),rare(0),masterwork(40),fine(70),basic(100)
+        if (rngNum < RarityPool.Special) {
             foundItem = await getDressUpItem.getRandomRarityItem(lootBoxId);
         }
-        if(!foundItem && RollForRarityRoll(RarityPool.Legendary))
-        {
+        if (!foundItem && rngNum < RarityPool.Legendary) {
             foundItem = await getDressUpItem.getRandomRarityItem("legendary");
         }
-        if(!foundItem && RollForRarityRoll(RarityPool.Exotic))
-        {
+        if (!foundItem && rngNum < RarityPool.Exotic) {
             foundItem = await getDressUpItem.getRandomRarityItem("exotic");
         }
-        if(!foundItem && RollForRarityRoll(RarityPool.Rare))
-        {
+        if (!foundItem && rngNum < RarityPool.Rare) {
             foundItem = await getDressUpItem.getRandomRarityItem("rare");
         }
-        if(!foundItem && RollForRarityRoll(RarityPool.Masterwork))
-        {
+        if (!foundItem && rngNum < RarityPool.Masterwork) {
             foundItem = await getDressUpItem.getRandomRarityItem("masterwork");
         }
-        if(!foundItem && RollForRarityRoll(RarityPool.Fine))
-        {
+        if (!foundItem && rngNum < RarityPool.Fine) {
             foundItem = await getDressUpItem.getRandomRarityItem("fine");
         }
-        else
-        {
+        if (!foundItem && rngNum < RarityPool.Basic) {
             foundItem = await getDressUpItem.getRandomRarityItem("basic");
-        }
-
-        if(!foundItem){
-            throw Error("No item found in the box... Ooops");
         }
 
         let currencyTaken = await Currency.spendFlowers(userid, lootBoxCost);
         if(currencyTaken!=1){
             throw Error("Unable to take Flowers.");
         }
+
+        if(!foundItem){
+            throw Error("Oops.  Your box appeared to be empty.  Better luck next time.");
+        }
+
 
         let itemGiven = await updateDressUpItem.giveUserItem(userid, foundItem.ItemId);
         if(itemGiven!=1){

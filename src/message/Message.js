@@ -7,7 +7,7 @@ module.exports.printItems = async function (message, items, p1=1, title="Items")
   var response = await message.channel.send(msgEmbed);
   
   if (config.pageLength < items.length) {
-    Paginate.addListeners(message, response, p1, items, title, itemEmbed);
+    Paginate.addListeners(message.author.id, response, p1, items, title, itemEmbed);
   }
 }
 
@@ -27,7 +27,7 @@ module.exports.printInventoryItems = async function (message, items, p1=1, title
   var response = await message.channel.send(msgEmbed);
   
   if (config.pageLength < items.length) {
-    Paginate.addListeners(message, response, p1, items, title, inventoryItemEmbed);
+    Paginate.addListeners(message.author.id, response, p1, items, title, inventoryItemEmbed);
   }
 }
 function inventoryItemEmbed(msgEmbed, items) {
@@ -117,7 +117,7 @@ module.exports.printLootboxes = async function (message, lootboxes, p1=1, title=
   var response = await message.channel.send(msgEmbed);
   
   if (config.pageLength < lootboxes.length) {
-    Paginate.addListeners(message, response, p1, lootboxes, title, lootBoxListEmbed);
+    Paginate.addListeners(message.author.id, response, p1, lootboxes, title, lootBoxListEmbed);
   }
 }
 

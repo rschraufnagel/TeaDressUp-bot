@@ -204,8 +204,7 @@ async function viewitem(message, args){
     if(!item){
       throw Error("Item "+ args[0] + " does not exist.");
     }else{
-      let baseBody = await getDressUpItem.selectItemById(config.previewBaseBodyId);
-      let imageNames = ImageBuilder.getPreviewSequence(baseBody.FileName, [item.FileName]);
+      let imageNames = ImageBuilder.getPreviewSequence(config.previewBodyFileName, [item.FileName]);
       let buffer1 = await ImageBuilder.getBuffer(imageNames);
       let v = await message.channel.send('', {
         files: [buffer1]
@@ -307,13 +306,12 @@ async function takeItem(message, args){
 async function buildMissingPreviews(message, args){
   if(config.admins[message.author.id]){
     try{
-      let baseBody = await getDressUpItem.selectItemById(config.previewBaseBodyId);
       let items = await getDressUpItem.selectItemsMissingPreview();
       if(items){
         for(let i=0; i<items.length; i++){
           let item = items[i];
   
-          let imageNames = ImageBuilder.getPreviewSequence(baseBody.FileName, [item.FileName]);
+          let imageNames = ImageBuilder.getPreviewSequence(config.previewBodyFileName, [item.FileName]);
           let buffer1 = await ImageBuilder.getBuffer(imageNames);
           let previewMessage = await message.channel.send('', {files: [buffer1]});
           

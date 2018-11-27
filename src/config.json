@@ -1,6 +1,6 @@
 {
   "connection":"./database/DressUp.db"
- ,"previewBaseBodyId" : 1
+ ,"previewBodyFileName" : "character_light_standing1.png"
  ,"pageLength": 8
  ,"colours" : {
      "error" : "0xcc263c"

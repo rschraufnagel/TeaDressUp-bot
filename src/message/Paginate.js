@@ -37,34 +37,54 @@ function createEmbedPage(page, items, title, itemEmbedFunction){
  * @param {*} itemList full list of items to paginate over
  * @param {*} title message title needed when rebuilding the message's next page
  * @param {*} itemEmbedFunction function to build the next page.
+ * @param {*} firstTime Boolean should be true unless being called from itself (this adds the initial reactions to the response.)
  */
-async function addListeners(message, response, page, itemList, title, itemEmbedFunction){
-  var filterPrev = (reaction, user) => { return (reaction.emoji.name === '◀' && user.id === message.author.id) };
-  var filterNext = (reaction, user) => { return (reaction.emoji.name === '▶' && user.id === message.author.id) };
+async function addListeners(authorId, response, page, itemList, title, itemEmbedFunction, firstTime = true){
+  //var filterPrev = (reaction, user) => { return (reaction.emoji.name === '◀' && user.id === authorId) };
+  //var filterNext = (reaction, user) => { return (reaction.emoji.name === '▶' && user.id === authorId) };
 
-  await response.react("◀");
-  await response.react("▶");
-
-  const collectPrev = response.createReactionCollector(filterPrev, { time: 15000 });
-  collectPrev.on('collect', async (r1) => {
-    console.log('CATCH PREV : ' + r1);
-    if (page > 1) {
-      page -= 1;
-      console.log("CurPage down to " + page);
-    }
-    var newMsg = createEmbedPage(page, itemList, title, itemEmbedFunction)
-    response.edit(newMsg);
-  });
-
-  const collectNext = response.createReactionCollector(filterNext, { time: 15000 });
-  collectNext.on('collect', async (r1) => {
-    console.log('CATCH PREV : ' + r1);
+  
+  var filterReactions = (reaction, user) => { return ( ['⏮', '⏪', '◀', '▶', '⏩', '⏭'].includes(reaction.emoji.name) && user.id === authorId) };
+  if(firstTime){
+    await response.react('⏮');
+    await response.react('⏪');
+    await response.react('◀');
+    await response.react('▶');
+    await response.react('⏩');
+    await response.react('⏭');
+  }
+  
+  let collector = response.createReactionCollector(filterReactions, {time: 15000});
+  collector.on('collect', async (r1) =>{
+    var minPage = 1;
     var maxPage = Math.ceil(itemList.length / config.pageLength);
-    if (page < maxPage) {
-      page += 1;
-      console.log("CurPage down to " + page);
-    }
-    var newMsg = createEmbedPage(page, itemList, title, itemEmbedFunction)
+    var nextPage = page;
+    collector.stop();
+    switch (r1.emoji.name) {
+      case '⏮':
+          nextPage = 1;
+          break;
+      case '⏪':
+          nextPage -= 5;
+          break;
+      case '◀':
+        nextPage--;
+        break;
+      case '▶':
+        nextPage++;
+        break;
+      case '⏩':
+        nextPage += 5;
+        break;
+      case '⏭':
+        nextPage = maxPage;
+        break;
+    };
+    nextPage = Math.max(nextPage, minPage);
+    nextPage = Math.min(nextPage, maxPage);
+
+    var newMsg = createEmbedPage(nextPage, itemList, title, itemEmbedFunction)
     response.edit(newMsg);
+    addListeners(authorId, response, nextPage, itemList, title, itemEmbedFunction, false);
   });
 }
