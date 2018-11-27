@@ -1,5 +1,7 @@
 const sqlite3 = require('sqlite3').verbose();
 const config = require('../config');
+const updateAsync = require('./AsyncCRUD').updateAsync;
+const insertAsync = require('./AsyncCRUD').insertAsync;
 
 module.exports = {
   addItem : addItem,
@@ -10,34 +12,6 @@ module.exports = {
   swapSequences : swapSequences,
   removeSequence : removeSequence,
   removeAllSequence : removeAllSequence
-}
-function updateAsync(db, sql, parms=[]){
-  var that = db;
-  return new Promise(function(resolve, reject){
-    let stmt = db.prepare(sql)
-    stmt.run(parms, (err) => {
-      if (err) {
-        reject (err);
-      }else{
-        resolve(stmt.changes);
-      }
-    });
-    stmt.finalize();
-  });
-}
-function insertAsync(db, sql, parms=[]){
-  var that = db;
-  return new Promise(function(resolve, reject){
-    let stmt = db.prepare(sql)
-    stmt.run(parms, (err) => {
-      if (err) {
-        reject (err);
-      }else{
-        resolve(stmt.lastID);
-      }
-    });
-    stmt.finalize();
-  });
 }
 
 

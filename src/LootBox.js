@@ -2,7 +2,7 @@ const getDressUpItem = require('./db/getDressUpItems');
 const getLootbox = require('./db/getLootBox');
 const updateDressUpItem = require('./db/updateDressUpItem');
 const Embed = require('./message/Message');
-const Currency = require('./db/Currency');
+const Currency = require('./db/FlowerCurrency');
 const ImageBuilder = require('./img/ImageBuilder');
 
 module.exports = {

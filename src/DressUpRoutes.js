@@ -1,6 +1,7 @@
 const ImageBuilder = require('./img/ImageBuilder');
 const getDressUpItem = require('./db/getDressUpItems');
 const updateDressUpItem = require('./db/updateDressUpItem');
+const CrystalShardCurrency = require('./db/CrystalShardCurrency');
 const getLootbox = require('./db/getLootBox');
 const Embed = require('./message/Message');
 const config = require('./config');
@@ -77,6 +78,23 @@ module.exports = function (message, messageContent = message.content) {
     case "viewlootboxes":
     case "viewlb":
       viewlootboxes(message, args.slice(1));
+      break;
+    case "register":
+      registerUser(message, args.slice(1));
+      break;
+    case "crystals":
+    case "shards":
+      printCrystalShards(message, args.slice(1));
+      break;
+    case "awardcrystals":
+    case "awardshards":
+    case "givecrystals":
+    case "giveshards":
+      awardCrystalShards(message, args.slice(1));
+      break;
+    case "removecrystals":
+    case "removeshards":
+      removeCrystalShards(message, args.slice(1));
       break;
     default:
       console.log("Args: "+ args);
@@ -248,7 +266,7 @@ async function takeItem(message, args){
       let userId = getUserId(args[0]);
       if(args[0]==userId){
         //User id passed through discord should be <###> if after parsing we get the same value then this wasn't an user id.
-        throw Error("First Argument must be @user to take the items from.");
+        throw Error("First Argument must be @user.");
       }
       
       let itemsToTake = args.slice(1);
@@ -316,6 +334,106 @@ async function buildMissingPreviews(message, args){
     Embed.printError(message, "You don't have access to this command.");
   }
 }
+
+
+/**
+ * Register the given user
+ * @param {*} message 
+ * @param {*} args 
+ */
+async function registerUser(message, args){
+  if(config.admins[message.author.id]){
+    try{
+      let userId = getUserId(args[0]);
+      if(args[0]==userId){
+        //User id passed through discord should be <###> if after parsing we get the same value then this wasn't an user id.
+        throw Error("First Argument must be @user.");
+      }
+
+      await CrystalShardCurrency.addUser(userId);
+
+      Embed.printMessage(message, "Done");
+    }catch(err){
+      console.error('registerUser Error : ' + err + " - " + err.stack);
+      Embed.printError(message, err.message?err.message:err);
+    }
+  }else{
+    Embed.printError(message, "You don't have access to this command.");
+  }
+}
+
+/**
+ * Print the users CrystalShard value.
+ * @param {*} message 
+ * @param {*} args 
+ */
+async function printCrystalShards(message, args) {
+  try{
+    let userId = message.author.id;
+    if(args && args.length>0){
+      let argUserId = getUserId(args[0]);
+      userId = argUserId;
+    }
+    let data = await CrystalShardCurrency.selectCrystalShards(userId, args[1]);
+
+    let username = message.client.users.get(userId).username;
+    Embed.printMessage(message, "**"+username + "** has " + data.Quantity + " :diamond_shape_with_a_dot_inside:");
+  }catch(err){
+    console.error('printCrystalShards Error : ' + err + " - " + err.stack);
+    Embed.printError(message, err.message?err.message:err);
+  }
+}
+/**
+ * Register the given user
+ * @param {*} message 
+ * @param {*} args 
+ */
+async function awardCrystalShards(message, args){
+  if(config.admins[message.author.id]){
+    try{
+      let userId = getUserId(args[0]);
+      if(args[0]==userId){
+        //User id passed through discord should be <###> if after parsing we get the same value then this wasn't an user id.
+        throw Error("First Argument must be @user.");
+      }
+      if(isNaN(args[1])){
+        throw Error("Second Argument must be the quantity of shards to award.");
+      }
+      await CrystalShardCurrency.giveCrystalShards(userId, args[1]);
+
+      Embed.printMessage(message, "Done");
+    }catch(err){
+      console.error('registerUser Error : ' + err + " - " + err.stack);
+      Embed.printError(message, err.message?err.message:err);
+    }
+  }else{
+    Embed.printError(message, "You don't have access to this command.");
+  }
+}
+
+async function removeCrystalShards(message, args){
+  if(config.admins[message.author.id]){
+    try{
+      let userId = getUserId(args[0]);
+      if(args[0]==userId){
+        //User id passed through discord should be <###> if after parsing we get the same value then this wasn't an user id.
+        throw Error("First Argument must be @user.");
+      }
+      if(isNaN(args[1])){
+        throw Error("Second Argument must be the quantity of shards to remove.");
+      }
+      await CrystalShardCurrency.takeCrystalShards(userId, args[1]);
+
+      Embed.printMessage(message, "Done");
+    }catch(err){
+      console.error('registerUser Error : ' + err + " - " + err.stack);
+      Embed.printError(message, err.message?err.message:err);
+    }
+  }else{
+    Embed.printError(message, "You don't have access to this command.");
+  }
+}
+
 
 /**
  * Admin command to add a new item to the Database

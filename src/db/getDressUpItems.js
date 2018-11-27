@@ -1,8 +1,11 @@
 const sqlite3 = require('sqlite3').verbose();
 const config = require('../config');
+const getAsync = require('./AsyncCRUD').getAsync;
+const allAsync = require('./AsyncCRUD').allAsync;
 
 module.exports = {
   selectItemsMissingPreview : selectItemsMissingPreview,
+  selectItemsById : selectItemsById,
   selectItemById : selectItemById,
   selectItemByFileName : selectItemByFileName,
   selectItemsByTag : selectItemsByTag,
@@ -13,32 +16,7 @@ module.exports = {
   getRandomRarityItem: getRandomRarityItem,
   getRandomSpecialItem : getRandomSpecialItem
 }
-function getAsync(db, sql, parms){
-  var that = db;
-  return new Promise(function(resolve, reject){
-    db.get(sql, parms, function(err, row){
-      if(err){
-        reject(err);
-      }else{
-        resolve(row);
-      }
-    });
-  });
-}
-function allAsync(db, sql, parms){
-  var that = db;
-  return new Promise(function(resolve, reject){
-    db.all(sql, parms, function(err, rows){
-      if(err){
-        reject(err);
-      }else if(rows==null){
-        resolve([]);
-      }else{
-        resolve(rows);
-      }
-    });
-  });
-}
+
 
 
 async function selectItemsByTag(orderby="ItemName", tags) {
@@ -76,6 +54,14 @@ async function  selectItemsMissingPreview() {
   return rows;
 }
 
+async function  selectItemsById(itemids) {
+  let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
+  let sqlquery = "Select ItemId,ItemName,FileName,Value from DressUpItems WHERE ItemId in (" + "?,".repeat(itemids.length).substring(0, end-1) + ")";
+  let rows = await allAsync(db, sqlquery, itemids);
+  db.close();
+
+  return rows;
+}
 async function  selectItemById(itemid) {
   let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
   let sqlquery = "Select ItemId,ItemName,FileName,Value from DressUpItems WHERE ItemId = ?";
