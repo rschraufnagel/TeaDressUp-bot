@@ -647,7 +647,7 @@ async function buyLootBox(message, args){
 
 async function IsUserRegister(message){
 
-    let results = await CrystalShardCurrency.selectCrystalShards(message.author.id)
+    let results = await CrystalShardCurrency.selectUserQuantity(message.author.id)
     if(results != false)
     {
       IsRegistered = true;
