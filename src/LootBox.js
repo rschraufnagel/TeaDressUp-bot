@@ -21,6 +21,40 @@ module.exports = {
     //get Rarities
     let RarityPool = await getLootbox.selectBoxRarityPool(lootBoxId);
     var foundItem;
+    var highestRarity;
+    var highestRarityFound = false;
+
+    if(!RarityPool.Special == 0)
+    {
+        highestRarity = "special";
+        highestRarityFound = true;
+    }
+    if(!RarityPool.Legendary == 0 && !highestRarityFound)
+    {
+        highestRarity = "legendary";
+        highestRarityFound = true;
+    }
+    if(!RarityPool.Exotic == 0 && !highestRarityFound)
+    {
+        highestRarity = "exotic";
+        highestRarityFound = true;
+    }
+    if(!RarityPool.Rare == 0 && !highestRarityFound)
+    {
+        highestRarity = "rare";
+        highestRarityFound = true;
+    }
+    if(!RarityPool.Masterwork == 0 && !highestRarityFound)
+    {
+        highestRarity = "masterwork";
+        highestRarityFound = true;
+    }
+    if(!RarityPool.Fine == 0 && !highestRarityFound)
+    {
+        highestRarity = "fine";
+        highestRarityFound = true;
+    }
+
     
     currentCurrency = currentCurrency - lootBoxCost;
 
@@ -32,20 +66,31 @@ module.exports = {
         //Special
         if (rngNum < RarityPool.Special) {
             foundItem = await getDressUpItem.getRandomRarityItem(lootBoxId);
+            if(highestRarity == "special")
+            {
+                Embed.printMessage(message, "<:inAwe:417515935331778560> WOW! You are super lucky! <:inAwe:417515935331778560>");
+            }
         }
         //Legendary
         if (!foundItem && rngNum < RarityPool.Legendary) {
             foundItem = await getDressUpItem.getRandomRarityItem("legendary");
-            if(Math.abs(RarityPool.Special - rngNum) < 3 && !RarityPool.Special)
+            if(highestRarity == "legendary")
+            {
+                Embed.printMessage(message, "<:inAwe:417515935331778560> WOW! You are super lucky! <:inAwe:417515935331778560>");
+            }
+            if(Math.abs(RarityPool.Special - rngNum) <= 3 && !RarityPool.Special)
             {
                 Embed.printMessage(message, "You were so close to a Special item! <:tehepelo:458997346617786378>");
             }
-            if()
         }
         //Exotic
         if (!foundItem && rngNum < RarityPool.Exotic) {
             foundItem = await getDressUpItem.getRandomRarityItem("exotic");
-            if(Math.abs(RarityPool.Legendary - rngNum) < 3 && !RarityPool.Legendary)
+            if(highestRarity == "exotic")
+            {
+                Embed.printMessage(message, "<:inAwe:417515935331778560> WOW! You are super lucky! <:inAwe:417515935331778560>");
+            }
+            if(Math.abs(RarityPool.Legendary - rngNum) <= 3 && !RarityPool.Legendary)
             {
                 Embed.printMessage(message, "You were so close to a Legendary item! <:tehepelo:458997346617786378>");
             }
@@ -53,7 +98,11 @@ module.exports = {
         //Rare
         if (!foundItem && rngNum < RarityPool.Rare) {
             foundItem = await getDressUpItem.getRandomRarityItem("rare");
-            if(Math.abs(RarityPool.Exotic - rngNum) < 3 && !RarityPool.Exotic)
+            if(highestRarity == "rare")
+            {
+                Embed.printMessage(message, "<:inAwe:417515935331778560> WOW! You are super lucky! <:inAwe:417515935331778560>");
+            }
+            if(Math.abs(RarityPool.Exotic - rngNum) <= 3 && !RarityPool.Exotic)
             {
                 Embed.printMessage(message, "You were so close to an Exotic item! <:tehepelo:458997346617786378>");
             }
@@ -61,7 +110,11 @@ module.exports = {
         //Masterwork
         if (!foundItem && rngNum < RarityPool.Masterwork) {
             foundItem = await getDressUpItem.getRandomRarityItem("masterwork");
-            if(Math.abs(RarityPool.Rare - rngNum) < 3 && !RarityPool.Rare)
+            if(highestRarity == "masterwork")
+            {
+                Embed.printMessage(message, "<:inAwe:417515935331778560> WOW! You are super lucky! <:inAwe:417515935331778560>");
+            }
+            if(Math.abs(RarityPool.Rare - rngNum) <= 3 && !RarityPool.Rare)
             {
                 Embed.printMessage(message, "You were so close to a Rare item! <:tehepelo:458997346617786378>");
             }
@@ -69,7 +122,11 @@ module.exports = {
         //Fine
         if (!foundItem && rngNum < RarityPool.Fine) {
             foundItem = await getDressUpItem.getRandomRarityItem("fine");
-            if(Math.abs(RarityPool.Masterwork - rngNum) < 3 || !RarityPool.Masterwork)
+            if(highestRarity == "fine")
+            {
+                Embed.printMessage(message, "<:inAwe:417515935331778560> WOW! You are super lucky! <:inAwe:417515935331778560>");
+            }
+            if(Math.abs(RarityPool.Masterwork - rngNum) <= 3 || !RarityPool.Masterwork)
             {
                 Embed.printMessage(message, "You were so close to a Masterwork item! <:tehepelo:458997346617786378>");
             }
@@ -77,7 +134,7 @@ module.exports = {
         //Basic
         if (!foundItem && rngNum < RarityPool.Basic) {
             foundItem = await getDressUpItem.getRandomRarityItem("basic");
-            if(Math.abs(RarityPool.Fine - rngNum) < 3 || RarityPool.Fine)
+            if(Math.abs(RarityPool.Fine - rngNum) <= 3 || RarityPool.Fine)
             {
                 Embed.printMessage(message, "You were so close to a fine item! <:tehepelo:458997346617786378>");
             }
