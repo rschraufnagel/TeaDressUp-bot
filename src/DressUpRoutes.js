@@ -30,6 +30,9 @@ module.exports = async function (message, messageContent = message.content) {
       case "viewequips":
         printCharacterItems(message, args.slice(1));
         break;
+      case "equipids":
+        printCharacterIds(message, args.slice(1));
+        break;
       case "viewinventory":
       case "viewinv":
         printInventoryItems(message, args.slice(1));
@@ -192,6 +195,16 @@ async function printCharacterItems(message, args){
   try{
     let items = await getDressUpItem.selectUserCharacterItems(message.author.id);
     Embed.printItems(message, items);  
+  }catch(err){
+    console.error('printCharacterItems Error : ' + err + " - " + err.stack);
+    Embed.printError(message, err.message?err.message:err);
+  }
+}
+async function printCharacterIds(message, args){
+  try{
+    let items = await getDressUpItem.selectUserCharacterItems(message.author.id);
+    let equippedIds = items.map(item => item.ItemId);
+    Embed.printMessage(message, equippedIds.join(" "));
   }catch(err){
     console.error('printCharacterItems Error : ' + err + " - " + err.stack);
     Embed.printError(message, err.message?err.message:err);
