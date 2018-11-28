@@ -1,12 +1,18 @@
 {
-  "connection":"./database/DressUp.db"
+  "dressup_connection":"./database/DressUp.db"
+ ,"nadeko_connection":"./database/NadekoBot.db"
  ,"previewBodyFileName" : "character_light_standing1.png"
+ ,"onRegisterItems" : [52, 531, 532]
  ,"pageLength": 8
  ,"colours" : {
      "error" : "0xcc263c"
     ,"normal" : "0x2eb8b8"
     ,"confirm" : "0xffd711"
   }
+ ,"currencyemoji": {
+    "Flowers" : ":cherry_blossom:",
+    "CrystalShards" : ":diamond_shape_with_a_dot_inside:"
+ }
  ,"admins" : {
     "Anzy" : false,
     "78615507703439360" : true,
