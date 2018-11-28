@@ -145,6 +145,7 @@ module.exports = {
             {
                 Embed.printMessage(message, "You were so close to a fine item! <:tehepelo:458997346617786378>");
             }
+            itemRarity = "Basic";
         }
 
         let currencyTaken = await Currency.spendFlowers(userid, lootBoxCost);
@@ -168,7 +169,7 @@ module.exports = {
         message.channel.send('', {
             files: [buffer1]
         });
-        Embed.printMessage(message, "You rolled " + foundItem.ItemName + " (" + itemRarity + "rarity).");
+        Embed.printMessage(message, "You rolled " + foundItem.ItemName + " (" + itemRarity + ")");
     }
     else 
     {
