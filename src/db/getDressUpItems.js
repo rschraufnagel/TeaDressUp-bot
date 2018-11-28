@@ -47,7 +47,7 @@ async function selectItemsByTag(orderby="ItemName", tags) {
 
 async function  selectItemsMissingPreview() {
   let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
-  let sqlquery = "Select ItemId,ItemName,FileName,Value from DressUpItems WHERE PreviewURL is null limit 20 ";
+  let sqlquery = "Select ItemId,ItemName,FileName,Value from DressUpItems WHERE PreviewURL is null";
   let rows = await allAsync(db, sqlquery, []);
   db.close();
 
