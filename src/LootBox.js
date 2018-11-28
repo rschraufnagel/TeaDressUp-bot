@@ -36,15 +36,16 @@ module.exports = {
         //Legendary
         if (!foundItem && rngNum < RarityPool.Legendary) {
             foundItem = await getDressUpItem.getRandomRarityItem("legendary");
-            if(Math.abs(RarityPool.Special - rngNum) < 5 && !RarityPool.Special)
+            if(Math.abs(RarityPool.Special - rngNum) < 3 && !RarityPool.Special)
             {
                 Embed.printMessage(message, "You were so close to a Special item! <:tehepelo:458997346617786378>");
             }
+            if()
         }
         //Exotic
         if (!foundItem && rngNum < RarityPool.Exotic) {
             foundItem = await getDressUpItem.getRandomRarityItem("exotic");
-            if(Math.abs(RarityPool.Legendary - rngNum) < 5 && !RarityPool.Legendary)
+            if(Math.abs(RarityPool.Legendary - rngNum) < 3 && !RarityPool.Legendary)
             {
                 Embed.printMessage(message, "You were so close to a Legendary item! <:tehepelo:458997346617786378>");
             }
@@ -52,7 +53,7 @@ module.exports = {
         //Rare
         if (!foundItem && rngNum < RarityPool.Rare) {
             foundItem = await getDressUpItem.getRandomRarityItem("rare");
-            if(Math.abs(RarityPool.Exotic - rngNum) < 5 && !RarityPool.Exotic)
+            if(Math.abs(RarityPool.Exotic - rngNum) < 3 && !RarityPool.Exotic)
             {
                 Embed.printMessage(message, "You were so close to an Exotic item! <:tehepelo:458997346617786378>");
             }
@@ -60,7 +61,7 @@ module.exports = {
         //Masterwork
         if (!foundItem && rngNum < RarityPool.Masterwork) {
             foundItem = await getDressUpItem.getRandomRarityItem("masterwork");
-            if(Math.abs(RarityPool.Rare - rngNum) < 5 && !RarityPool.Rare)
+            if(Math.abs(RarityPool.Rare - rngNum) < 3 && !RarityPool.Rare)
             {
                 Embed.printMessage(message, "You were so close to a Rare item! <:tehepelo:458997346617786378>");
             }
@@ -68,7 +69,7 @@ module.exports = {
         //Fine
         if (!foundItem && rngNum < RarityPool.Fine) {
             foundItem = await getDressUpItem.getRandomRarityItem("fine");
-            if(Math.abs(RarityPool.Masterwork - rngNum) < 5 || !RarityPool.Masterwork)
+            if(Math.abs(RarityPool.Masterwork - rngNum) < 3 || !RarityPool.Masterwork)
             {
                 Embed.printMessage(message, "You were so close to a Masterwork item! <:tehepelo:458997346617786378>");
             }
@@ -76,7 +77,7 @@ module.exports = {
         //Basic
         if (!foundItem && rngNum < RarityPool.Basic) {
             foundItem = await getDressUpItem.getRandomRarityItem("basic");
-            if(Math.abs(RarityPool.Fine - rngNum) < 5 || RarityPool.Fine)
+            if(Math.abs(RarityPool.Fine - rngNum) < 3 || RarityPool.Fine)
             {
                 Embed.printMessage(message, "You were so close to a fine item! <:tehepelo:458997346617786378>");
             }
