@@ -13,9 +13,9 @@ var IsRegistered = false;
  * Routing all messages
  * @param {*} message 
  */
-module.exports = function (message, messageContent = message.content) {
+module.exports = async function (message, messageContent = message.content) {
   var args = getArgs(messageContent, 0);
-  IsUserRegister(message);
+  await IsUserRegister(message);
   if(IsRegistered || args[0] == "register")
   {
     switch (args[0]) {
