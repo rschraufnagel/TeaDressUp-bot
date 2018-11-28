@@ -188,6 +188,7 @@ module.exports = {
         let v = await message.channel.send('', {
           files: [buffer1]
         });
+        Embed.printMessage(message, "You now have " + currentCurrency + " 🌸")
     }
     else 
     {
