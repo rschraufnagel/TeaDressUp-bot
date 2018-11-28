@@ -182,7 +182,7 @@ module.exports = {
         }
 
 
-        Embed.printMessage(message, "You rolled " + foundItem.ItemName + " (" + itemRarity + ")");
+        Embed.printMessage(message, "You rolled " + foundItem.ItemName + " (" + itemRarity + ") #"+ foundItem.ItemId);
         let imageNames = await ImageBuilder.getPreviewSequence(config.previewBodyFileName, [foundItem.FileName]);
         let buffer1 = await ImageBuilder.getBuffer(imageNames);
         let v = await message.channel.send('', {
