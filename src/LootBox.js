@@ -21,7 +21,7 @@ module.exports = {
     //get Rarities
     let RarityPool = await getLootbox.selectBoxRarityPool(lootBoxId);
     var foundItem;
-
+    
     currentCurrency = currentCurrency - lootBoxCost;
 
     //Check if user has the money for said box.
@@ -29,26 +29,57 @@ module.exports = {
     {
         var rngNum = Math.floor((Math.random()*100));
         //sample: legendary(0), exotic(10),rare(0),masterwork(40),fine(70),basic(100)
+        //Special
         if (rngNum < RarityPool.Special) {
             foundItem = await getDressUpItem.getRandomRarityItem(lootBoxId);
         }
+        //Legendary
         if (!foundItem && rngNum < RarityPool.Legendary) {
             foundItem = await getDressUpItem.getRandomRarityItem("legendary");
+            if(Math.abs(RarityPool.Special - rngNum) < 5 && !RarityPool.Special)
+            {
+                Embed.printMessage(message, "You were so close to a Special item! <:tehepelo:458997346617786378>");
+            }
         }
+        //Exotic
         if (!foundItem && rngNum < RarityPool.Exotic) {
             foundItem = await getDressUpItem.getRandomRarityItem("exotic");
+            if(Math.abs(RarityPool.Legendary - rngNum) < 5 && !RarityPool.Legendary)
+            {
+                Embed.printMessage(message, "You were so close to a Legendary item! <:tehepelo:458997346617786378>");
+            }
         }
+        //Rare
         if (!foundItem && rngNum < RarityPool.Rare) {
             foundItem = await getDressUpItem.getRandomRarityItem("rare");
+            if(Math.abs(RarityPool.Exotic - rngNum) < 5 && !RarityPool.Exotic)
+            {
+                Embed.printMessage(message, "You were so close to an Exotic item! <:tehepelo:458997346617786378>");
+            }
         }
+        //Masterwork
         if (!foundItem && rngNum < RarityPool.Masterwork) {
             foundItem = await getDressUpItem.getRandomRarityItem("masterwork");
+            if(Math.abs(RarityPool.Rare - rngNum) < 5 && !RarityPool.Rare)
+            {
+                Embed.printMessage(message, "You were so close to a Rare item! <:tehepelo:458997346617786378>");
+            }
         }
+        //Fine
         if (!foundItem && rngNum < RarityPool.Fine) {
             foundItem = await getDressUpItem.getRandomRarityItem("fine");
+            if(Math.abs(RarityPool.Masterwork - rngNum) < 5 || !RarityPool.Masterwork)
+            {
+                Embed.printMessage(message, "You were so close to a Masterwork item! <:tehepelo:458997346617786378>");
+            }
         }
+        //Basic
         if (!foundItem && rngNum < RarityPool.Basic) {
             foundItem = await getDressUpItem.getRandomRarityItem("basic");
+            if(Math.abs(RarityPool.Fine - rngNum) < 5 || RarityPool.Fine)
+            {
+                Embed.printMessage(message, "You were so close to a fine item! <:tehepelo:458997346617786378>");
+            }
         }
 
         let currencyTaken = await Currency.spendFlowers(userid, lootBoxCost);
@@ -70,7 +101,6 @@ module.exports = {
         message.channel.send('', {
             files: [buffer1]
         });
-        Embed.printMessage(message, "You rolled " + foundItem.ItemName);
     }
     else 
     {
