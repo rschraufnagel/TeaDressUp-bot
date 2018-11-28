@@ -16,7 +16,7 @@ var IsRegistered = false;
 module.exports = function (message, messageContent = message.content) {
   var args = getArgs(messageContent, 0);
   IsUserRegister(message);
-  if(IsRegistered)
+  if(IsRegistered || args[0] == "register")
   {
     switch (args[0]) {
       case "viewallitems":
