@@ -1,41 +1,32 @@
 const sqlite3 = require('sqlite3').verbose();
 const config = require('../config');
+const getAsync = require('./AsyncCRUD').getAsync;
+const allAsync = require('./AsyncCRUD').allAsync;
+const updateAsync = require('./AsyncCRUD').updateAsync;
 
 module.exports = {
-    getFlowers:getFlowers,
-    spendFlowers:spendFlowers
-  }
-
-function getFlowers (dUser) {
-    let db = new sqlite3.Database("./database/NadekoBot.db", (err) => {if (err) {reject(err);}});
-    let sqlquery = "select Amount from currency where userid = ?";
-    return new Promise(function(resolve, reject) {
-      db.all(sqlquery, [dUser], (err, rows) => {
-        if (err) {reject (err);}
-        if(rows==null){
-          resolve([]);
-        }else{
-          resolve(rows);
-        }
-      });
-      db.close();
-    });
+  selectUserQuantity : selectUserQuantity,
+  take : take
 }
 
+async function selectUserQuantity (userId) {
+  let db = new sqlite3.Database(config.nadeko_connection, (err) => {if (err) {reject(err);}});
+  let sql = "select Amount AS Quantity from currency where userid = ?";
+  let row = await getAsync(db, sql, [userId]);
+  if(!row){
+    row = {Quantity:0};
+  }
+  db.close();
+  return row;
+}
 
-function spendFlowers(dUser, amount){
-  let db = new sqlite3.Database("./database/NadekoBot.db", (err) => {if (err) {reject(err);}});
-  let sql = "UPDATE currency SET Amount = Amount-? where UserId = ?";
-  return new Promise(function(resolve, reject){
-    let stmt = db.prepare(sql)
-    stmt.run([Math.abs(amount), dUser], (err) => {
-      if (err) {
-        reject(err);
-      }else{
-        resolve(stmt.changes);
-      }
-    });
-    stmt.finalize();
-    db.close();
-  });
+async function take (userId, quantity) {
+  let db = new sqlite3.Database(config.nadeko_connection, (err) => {if (err) {reject(err);}});
+  let sql = "UPDATE currency SET Amount = Amount-? where UserId = ? AND Amount >= ?";
+  let updated = await updateAsync(db, sql, [Math.abs(quantity), userId, Math.abs(quantity)]);
+  if(updated==0){
+    throw Error("Cannot take " + quantity+ " Flowers from user.");
+  }
+  db.close();
+  return true;
 }

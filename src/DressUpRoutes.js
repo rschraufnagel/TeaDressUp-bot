@@ -233,17 +233,8 @@ async function giveItem(message, args){
       }
       
       let itemsToAdd = args.slice(1);
-      for(let i=0; i<itemsToAdd.length; i++){
-        let itemToAdd = itemsToAdd[i];
-        try{
-          let success = await updateDressUpItem.giveUserItem(userId, itemToAdd);  
-          if(!success){
-            throw Error("Something didn't work");
-          }
-        }catch(addError){
-          throw Error("Error giving item "+ itemToAdd + " : " + addError);
-        }
-      }
+      loopGiveItems(userId, itemsToAdd);
+
       Embed.printMessage(message, "Done");
     }catch(err){
       console.error('giveItem Error : ' + err + " - " + err.stack);
@@ -253,6 +244,20 @@ async function giveItem(message, args){
     Embed.printError(message, "You don't have access to this command.");
   }
 }
+async function loopGiveItems(userId, itemsToAdd){
+  for(let i=0; i<itemsToAdd.length; i++){
+    let itemToAdd = itemsToAdd[i];
+    try{
+      let success = await updateDressUpItem.giveUserItem(userId, itemToAdd);  
+      if(!success){
+        throw Error("Something didn't work");
+      }
+    }catch(addError){
+      throw Error("Error giving item "+ itemToAdd + " : " + addError);
+    }
+  }
+}
+
 
 /**
  *Admin command to take items
@@ -340,23 +345,21 @@ async function buildMissingPreviews(message, args){
  * @param {*} args 
  */
 async function registerUser(message, args){
-  if(config.admins[message.author.id]){
-    try{
-      let userId = getUserId(args[0]);
-      if(args[0]==userId){
-        //User id passed through discord should be <###> if after parsing we get the same value then this wasn't an user id.
-        throw Error("First Argument must be @user.");
-      }
-
-      await CrystalShardCurrency.addUser(userId);
-
-      Embed.printMessage(message, "Done");
-    }catch(err){
-      console.error('registerUser Error : ' + err + " - " + err.stack);
-      Embed.printError(message, err.message?err.message:err);
+  try{
+    let userId = message.author.id;
+    let user = await CrystalShardCurrency.selectUserQuantity(userId)
+    if(user.Quantity>=0){
+      throw Error("You are already registered");
     }
-  }else{
-    Embed.printError(message, "You don't have access to this command.");
+
+    await CrystalShardCurrency.addUser(userId);
+    //Give users default Body, Eyes, and mouth
+    await loopGiveItems(userId, config.onRegisterItems);
+    await equipItem(message, config.onRegisterItems);
+    Embed.printMessage(message, ":sparkles: You have registered! :sparkles:\n\n Here is your character.");
+  }catch(err){
+    console.error('registerUser Error : ' + err + " - " + err.stack);
+    Embed.printError(message, err.message?err.message:err);
   }
 }
 
@@ -372,7 +375,7 @@ async function printCrystalShards(message, args) {
       let argUserId = getUserId(args[0]);
       userId = argUserId;
     }
-    let data = await CrystalShardCurrency.selectCrystalShards(userId, args[1]);
+    let data = await CrystalShardCurrency.selectUserQuantity(userId, args[1]);
 
     let username = message.client.users.get(userId).username;
     Embed.printMessage(message, "**"+username + "** has " + data.Quantity + " :diamond_shape_with_a_dot_inside:");
@@ -397,7 +400,7 @@ async function awardCrystalShards(message, args){
       if(isNaN(args[1])){
         throw Error("Second Argument must be the quantity of shards to award.");
       }
-      await CrystalShardCurrency.giveCrystalShards(userId, args[1]);
+      await CrystalShardCurrency.give(userId, args[1]);
 
       Embed.printMessage(message, "Done");
     }catch(err){
@@ -420,7 +423,7 @@ async function removeCrystalShards(message, args){
       if(isNaN(args[1])){
         throw Error("Second Argument must be the quantity of shards to remove.");
       }
-      await CrystalShardCurrency.takeCrystalShards(userId, args[1]);
+      await CrystalShardCurrency.take(userId, args[1]);
 
       Embed.printMessage(message, "Done");
     }catch(err){
@@ -625,7 +628,7 @@ async function viewLootBoxItems(message, args) {
 
 async function buyLootBox(message, args){
   try{
-    lootBox.BuyLootBox(message, message.author.id, args[0]);
+    await lootBox.BuyLootBox(message, message.author.id, args[0]);
   }
   catch(err){
     console.error('buyLootBox Error : ' + err + " - " + err.stack);

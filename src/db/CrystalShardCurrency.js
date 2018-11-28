@@ -8,21 +8,21 @@ const insertAsync = require('./AsyncCRUD').insertAsync;
 
 module.exports = {
     addUser:addUser,
-    selectCrystalShards : selectCrystalShards,
-    giveCrystalShards : giveCrystalShards,
-    takeCrystalShards : takeCrystalShards
+    selectUserQuantity : selectUserQuantity,
+    give : give,
+    take : take
   }
 
 async function addUser (userId) {
-  let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
+  let db = new sqlite3.Database(config.dressup_connection, (err) => {if (err) {reject(err);}});
   let sql = "INSERT INTO DiscordUserCrystalShard (UserId) VALUES (?)";
   let inserted = await insertAsync(db, sql, [userId]);
   db.close();
   return true;
 }
 
-async function selectCrystalShards (userId) {
-  let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
+async function selectUserQuantity (userId) {
+  let db = new sqlite3.Database(config.dressup_connection, (err) => {if (err) {reject(err);}});
   let sql = "SELECT Quantity FROM DiscordUserCrystalShard WHERE UserId = ?";
   let row = await getAsync(db, sql, [userId]);
   if(!row){
@@ -32,8 +32,8 @@ async function selectCrystalShards (userId) {
   return row;
 }
 
-async function giveCrystalShards (userId, quantity) {
-  let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
+async function give (userId, quantity) {
+  let db = new sqlite3.Database(config.dressup_connection, (err) => {if (err) {reject(err);}});
   let sql = "UPDATE DiscordUserCrystalShard SET Quantity= Quantity + ? WHERE UserId = ?";
   let updated = await updateAsync(db, sql, [Math.abs(quantity), userId]);
   if(updated==0){
@@ -43,8 +43,8 @@ async function giveCrystalShards (userId, quantity) {
   return true;
 }
 
-async function takeCrystalShards (userId, quantity) {
-  let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
+async function take (userId, quantity) {
+  let db = new sqlite3.Database(config.dressup_connection, (err) => {if (err) {reject(err);}});
   let sql = "UPDATE DiscordUserCrystalShard SET Quantity= Quantity - ? WHERE UserId = ? AND Quantity >= ?";
   let updated = await updateAsync(db, sql, [Math.abs(quantity), userId, Math.abs(quantity)]);
   if(updated==0){

@@ -43,8 +43,9 @@ function inventoryItemEmbed(msgEmbed, items) {
 }
 
 module.exports.printLootBox = async function(message, lootbox){
+
   let text = "**"+lootbox.LootBoxName + "** (#"+lootbox.LootBoxId+")";
-  text += "\n**Cost:** "+lootbox.Cost + " :cherry_blossom:";
+  text += "\n**Cost:** "+lootbox.Cost + " " + config.currencyemoji[lootbox.Currency];
   text += "\n__**Box Contents:**__";
   if(lootbox.Basic){
     //No white Heart :(
@@ -82,7 +83,7 @@ function lootBoxListEmbed(msgEmbed, lootboxes){
   for (var i = 0; i < lootboxes.length; i++) {
     var lootbox = lootboxes[i];
     
-    var details = "**"+lootbox.Cost + "** :cherry_blossom:";
+    var details = "**"+lootbox.Cost + "** " + config.currencyemoji[lootbox.Currency];
     details += "\n**__Loot:__** `"
     if(lootbox.Basic){
       //No white Heart :(

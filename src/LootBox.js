@@ -1,8 +1,10 @@
+const config = require('./config');
 const getDressUpItem = require('./db/getDressUpItems');
 const getLootbox = require('./db/getLootBox');
 const updateDressUpItem = require('./db/updateDressUpItem');
 const Embed = require('./message/Message');
-const Currency = require('./db/FlowerCurrency');
+const FlowerCurrency = require('./db/FlowerCurrency');
+const CrystalShardCurrency = require('./db/CrystalShardCurrency');
 const ImageBuilder = require('./img/ImageBuilder');
 
 module.exports = {
@@ -12,11 +14,25 @@ module.exports = {
   //I known it's messy but basic idea is here.
   async function BuyLootBox(message, userid, lootBoxId)
   {
-      //get flowers
-    let userCurrency = await Currency.getFlowers(userid);
-    var currentCurrency = userCurrency[0].Amount;
-    //get lootbox cost
+    //get lootbox
     let lootBoxinfo = await getLootbox.selectLootBox(lootBoxId);
+    if(!lootBoxinfo){
+        throw Error("Lootbox " + lootBoxId + " doesn't exist.");
+    }
+    let Currency;
+    if(lootBoxinfo.Currency=="CrystalShards"){
+        Currency = CrystalShardCurrency;
+    }else if(lootBoxinfo.Currency=="Flowers"){
+        Currency = FlowerCurrency;
+    }else{
+        throw Error("Lootbox uses an unknown currency: " + lootBoxinfo.Currency);
+    }
+
+    //get flowers
+    let userCurrency = await Currency.selectUserQuantity(userid);
+    var currentCurrency = userCurrency.Quantity;
+    
+    
     var lootBoxCost = lootBoxinfo.Cost;
     //get Rarities
     let RarityPool = await getLootbox.selectBoxRarityPool(lootBoxId);
@@ -25,12 +41,12 @@ module.exports = {
     currentCurrency = currentCurrency - lootBoxCost;
 
     //Check if user has the money for said box.
-    if(currentCurrency > 0)
+    if(currentCurrency >= 0)
     {
         var rngNum = Math.floor((Math.random()*100));
         //sample: legendary(0), exotic(10),rare(0),masterwork(40),fine(70),basic(100)
         if (rngNum < RarityPool.Special) {
-            foundItem = await getDressUpItem.getRandomRarityItem(lootBoxId);
+            foundItem = await getDressUpItem.getRandomSpecialItem(lootBoxId);
         }
         if (!foundItem && rngNum < RarityPool.Legendary) {
             foundItem = await getDressUpItem.getRandomRarityItem("legendary");
@@ -51,8 +67,8 @@ module.exports = {
             foundItem = await getDressUpItem.getRandomRarityItem("basic");
         }
 
-        let currencyTaken = await Currency.spendFlowers(userid, lootBoxCost);
-        if(currencyTaken!=1){
+        let currencyTaken = await Currency.take(userid, lootBoxCost);
+        if(!currencyTaken){
             throw Error("Unable to take Flowers.");
         }
 
@@ -66,31 +82,20 @@ module.exports = {
             throw Error("Unable to give Item.");
         }
 
-        let buffer1 = await ImageBuilder.getBuffer([foundItem.FileName]);
-        message.channel.send('', {
-            files: [buffer1]
-        });
+
         Embed.printMessage(message, "You rolled " + foundItem.ItemName);
+        let imageNames = await ImageBuilder.getPreviewSequence(config.previewBodyFileName, [foundItem.FileName]);
+        let buffer1 = await ImageBuilder.getBuffer(imageNames);
+        let v = await message.channel.send('', {
+          files: [buffer1]
+        });
+
+
+        
     }
     else 
     {
-        Embed.printError(message, "Nothing happened because you are poor")
+        Embed.printError(message, "Nothing happened because you are poor " + config.currencyemoji[lootBoxinfo.Currency]);
         //Message bad things
-    }
-  }
-
-  function RollForRarityRoll(dropChance)
-  {
-    var dropChanceRoll = Math.floor((Math.random()*100) + 1);
-    console.log(dropChance + " >= " + dropChanceRoll);
-    if(dropChance >= dropChanceRoll)
-    {
-        console.log("True");
-        return true;
-    }
-    else
-    {
-        console.log("False");
-        return false;
     }
   }
