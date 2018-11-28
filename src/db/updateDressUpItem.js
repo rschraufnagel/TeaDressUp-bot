@@ -21,7 +21,7 @@ module.exports = {
  * @param {*} itemId
  */
 async function giveUserItem(userId, itemId){
-  let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
+  let db = new sqlite3.Database(config.dressup_connection, (err) => {if (err) {reject(err);}});
   //SQLITE by default doesn't load enforcing foreign key constraints (turn it on).
   //TODO: Probably need a better way overall to handle db connections across the app.
   let pragma = await updateAsync(db, 'PRAGMA foreign_keys=on');
@@ -40,7 +40,7 @@ async function giveUserItem(userId, itemId){
  * Take an item away from a user.  Only allowed to take an item if it is not currently equipped (ie. if the user only has 1 and it is equipped do not take.)
  */
 async function takeUserItem(userId, itemId){
-  let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
+  let db = new sqlite3.Database(config.dressup_connection, (err) => {if (err) {reject(err);}});
   //SQLITE by default doesn't load enforcing foreign key constraints (turn it on).
   //TODO: Probably need a better way overall to handle db connections across the app.
   let pragma = await updateAsync(db, 'PRAGMA foreign_keys=on');
@@ -68,7 +68,7 @@ async function takeUserItem(userId, itemId){
  * @return {*} id of the item created.
  */
 async function addItem(itemName, value, fileName, rarity){
-  let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
+  let db = new sqlite3.Database(config.dressup_connection, (err) => {if (err) {reject(err);}});
   //SQLITE by default doesn't load enforcing foreign key constraints (turn it on).
   //TODO: Probably need a better way overall to handle db connections across the app.
   let pragma = await updateAsync(db, 'PRAGMA foreign_keys=on');
@@ -81,7 +81,7 @@ async function addItem(itemName, value, fileName, rarity){
 }
 
 async function setItemPreviewURL(itemId, previewURL){
-  let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
+  let db = new sqlite3.Database(config.dressup_connection, (err) => {if (err) {reject(err);}});
   //SQLITE by default doesn't load enforcing foreign key constraints (turn it on).
   //TODO: Probably need a better way overall to handle db connections across the app.
   let pragma = await updateAsync(db, 'PRAGMA foreign_keys=on');
@@ -101,7 +101,7 @@ async function setItemPreviewURL(itemId, previewURL){
  * @returns {Promise} promise of number of rows updated (change = 1, no change = 0).
  */
 async function removeAllSequence(userid){
-  let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
+  let db = new sqlite3.Database(config.dressup_connection, (err) => {if (err) {reject(err);}});
   //SQLITE by default doesn't load enforcing foreign key constraints (turn it on).
   //TODO: Probably need a better way overall to handle db connections across the app.
   let pragma = await updateAsync(db, 'PRAGMA foreign_keys=on');
@@ -123,7 +123,7 @@ async function removeAllSequence(userid){
  * @returns {*} promise of number of rows updated (change = 1, no change = 0).
  */
 async function removeSequence(userid, sequenceNumber){
-  let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
+  let db = new sqlite3.Database(config.dressup_connection, (err) => {if (err) {reject(err);}});
   //SQLITE by default doesn't load enforcing foreign key constraints (turn it on).
   //TODO: Probably need a better way overall to handle db connections across the app.
   let pragma = await updateAsync(db, 'PRAGMA foreign_keys=on');
@@ -145,7 +145,7 @@ async function removeSequence(userid, sequenceNumber){
  * @returns {*} promise of number of rows updated (change = 1, no change = 0).
  */
 async function swapSequences(userid, item1, item2){
-  let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
+  let db = new sqlite3.Database(config.dressup_connection, (err) => {if (err) {reject(err);}});
   //SQLITE by default doesn't load enforcing foreign key constraints (turn it on).
   //TODO: Probably need a better way overall to handle db connections across the app.
   let pragma = await updateAsync(db, 'PRAGMA foreign_keys=on');
@@ -163,7 +163,7 @@ async function swapSequences(userid, item1, item2){
  * @param {array} itemids array of itemIds
  */
 async function addNextSequences(userid, itemids){
-  let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
+  let db = new sqlite3.Database(config.dressup_connection, (err) => {if (err) {reject(err);}});
   //SQLITE by default doesn't load enforcing foreign key constraints (turn it on).
   //TODO: Probably need a better way overall to handle db connections across the app.
   let pragma = await updateAsync(db, 'PRAGMA foreign_keys=on');

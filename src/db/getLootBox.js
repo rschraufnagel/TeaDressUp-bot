@@ -10,7 +10,7 @@ module.exports = {
 
 //Retrieve All Loot Box Items
 function selectLootSpecialItems(lootBoxId) {
-      let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
+      let db = new sqlite3.Database(config.dressup_connection, (err) => {if (err) {reject(err);}});
       let sqlquery = "select * from LootBoxSpecialItem inner join DressUpItems on LootBoxSpecialItem.ItemId = DressUpItems.ItemId where LootBoxSpecialItem.LootBoxId = ?"
       return new Promise(function(resolve, reject) {
         db.all(sqlquery, [lootBoxId], (err, rows) => {
@@ -27,8 +27,8 @@ function selectLootSpecialItems(lootBoxId) {
 
   //Retrieve All Loot boxes
 function selectAllLootBoxes() {
-  let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
-  let sqlquery = "Select LootBoxName, LootBoxId, Cost, Basic, Fine, Masterwork, Rare, Exotic, Legendary, Special from LootBox LEFT JOIN RarityPool ON LootBox.RarityPoolId = RarityPool.RarityPoolId";
+  let db = new sqlite3.Database(config.dressup_connection, (err) => {if (err) {reject(err);}});
+  let sqlquery = "Select LootBoxName, LootBoxId, Currency, Cost, Basic, Fine, Masterwork, Rare, Exotic, Legendary, Special from LootBox LEFT JOIN RarityPool ON LootBox.RarityPoolId = RarityPool.RarityPoolId";
   return new Promise(function(resolve, reject) {
     db.all(sqlquery, (err, rows) => {
       if (err) {reject (err);}
@@ -43,7 +43,7 @@ function selectAllLootBoxes() {
 }
 
 function selectLootBox(lootBoxId){
-  let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
+  let db = new sqlite3.Database(config.dressup_connection, (err) => {if (err) {reject(err);}});
   let sqlquery = "Select * from LootBox LEFT JOIN RarityPool ON LootBox.RarityPoolId = RarityPool.RarityPoolId where LootBoxId = ?";
   return new Promise(function(resolve, reject) {
     db.get(sqlquery, [lootBoxId], (err, row) => {
@@ -55,7 +55,7 @@ function selectLootBox(lootBoxId){
 }
 
 function selectBoxRarityPool(lootBoxId){
-  let db = new sqlite3.Database(config.connection, (err) => {if (err) {reject(err);}});
+  let db = new sqlite3.Database(config.dressup_connection, (err) => {if (err) {reject(err);}});
   let sqlquery = "Select Basic, Fine, Masterwork, Rare, Exotic, Legendary, Special from RarityPool INNER JOIN LootBox ON LootBox.RarityPoolId = RarityPool.RarityPoolId  where LootBoxId = ?";
   return new Promise(function(resolve, reject) {
     db.get(sqlquery, [lootBoxId], (err, row) => {
