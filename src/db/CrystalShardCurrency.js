@@ -26,7 +26,7 @@ async function selectCrystalShards (userId) {
   let sql = "SELECT Quantity FROM DiscordUserCrystalShard WHERE UserId = ?";
   let row = await getAsync(db, sql, [userId]);
   if(!row){
-    throw Error("User is not registered.");
+    return false;
   }
   db.close();
   return row;

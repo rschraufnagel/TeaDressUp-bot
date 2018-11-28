@@ -7,98 +7,107 @@ const Embed = require('./message/Message');
 const config = require('./config');
 const lootBox = require('./LootBox');
 
+var IsRegistered = false;
+
 /**
  * Routing all messages
  * @param {*} message 
  */
 module.exports = function (message, messageContent = message.content) {
   var args = getArgs(messageContent, 0);
-  switch (args[0]) {
-    case "viewallitems":
-    case "viewallitemsbyname":
-      printAllItems(message, "ItemName", args.slice(1));
-      break;
-    case "viewallitemsbyid":
-      printAllItems(message, "ItemId", args.slice(1));
-      break;
-    case "vieweq":
-    case "viewequips":
-      printCharacterItems(message, args.slice(1));
-      break;
-    case "viewinventory":
-    case "viewinv":
-      printInventoryItems(message, args.slice(1));
-      break;
-    case "viewitem":
-      viewitem(message, args.slice(1));
-      break;
-    case "viewchar":
-      viewCharacter(message, args.slice(1));
-      break;
-    case "charval":
-      printCharacterValue(message, args.slice(1));
-      break;
-    case "replace":
-      replaceItem(message, args.slice(1));
-      break;
-    case "equip":
-      equipItem(message, args.slice(1));
-      break;
-    case "unequip":
-      unEquipItem(message, args.slice(1));
-      break;
-    case "unequipall":
-      unEquipAllItems(message, args.slice(1));
-      break;
-    case "additem":
-    case "giveitem":
-      giveItem(message, args.slice(1));
-      break;
-    case "takeitem":
-      takeItem(message, args.slice(1));
-      break;
-    case "addnewitem":
-        addNewItem(message, args.slice(1));
+  IsUserRegister(message);
+  if(IsRegistered)
+  {
+    switch (args[0]) {
+      case "viewallitems":
+      case "viewallitemsbyname":
+        printAllItems(message, "ItemName", args.slice(1));
         break;
-    case "setpreviews":
-        buildMissingPreviews(message, args.slice(1));
+      case "viewallitemsbyid":
+        printAllItems(message, "ItemId", args.slice(1));
         break;
-    case "viewlb":
-    if (args.length > 1)
-    {
-      viewLootBoxItems(message, args.slice(1));
-      break;
+      case "vieweq":
+      case "viewequips":
+        printCharacterItems(message, args.slice(1));
+        break;
+      case "viewinventory":
+      case "viewinv":
+        printInventoryItems(message, args.slice(1));
+        break;
+      case "viewitem":
+        viewitem(message, args.slice(1));
+        break;
+      case "viewchar":
+        viewCharacter(message, args.slice(1));
+        break;
+      case "charval":
+        printCharacterValue(message, args.slice(1));
+        break;
+      case "replace":
+        replaceItem(message, args.slice(1));
+        break;
+      case "equip":
+        equipItem(message, args.slice(1));
+        break;
+      case "unequip":
+        unEquipItem(message, args.slice(1));
+        break;
+      case "unequipall":
+        unEquipAllItems(message, args.slice(1));
+        break;
+      case "additem":
+      case "giveitem":
+        giveItem(message, args.slice(1));
+        break;
+      case "takeitem":
+        takeItem(message, args.slice(1));
+        break;
+      case "addnewitem":
+          addNewItem(message, args.slice(1));
+          break;
+      case "setpreviews":
+          buildMissingPreviews(message, args.slice(1));
+          break;
+      case "viewlb":
+      if (args.length > 1)
+      {
+        viewLootBoxItems(message, args.slice(1));
+        break;
+      }
+      case "buylb":
+      if (args.length > 1)
+      {
+        buyLootBox(message, args.slice(1));
+        break;
+      }
+      case "viewlootboxes":
+      case "viewlb":
+        viewlootboxes(message, args.slice(1));
+        break;
+      case "register":
+        registerUser(message, args.slice(1));
+        break;
+      case "crystals":
+      case "shards":
+        printCrystalShards(message, args.slice(1));
+        break;
+      case "awardcrystals":
+      case "awardshards":
+      case "givecrystals":
+      case "giveshards":
+        awardCrystalShards(message, args.slice(1));
+        break;
+      case "removecrystals":
+      case "removeshards":
+        removeCrystalShards(message, args.slice(1));
+        break;
+      default:
+        console.log("Args: "+ args);
+        message.channel.send('Invalid Command!');
     }
-    case "buylb":
-    if (args.length > 1)
-    {
-      buyLootBox(message, args.slice(1));
-      break;
-    }
-    case "viewlootboxes":
-    case "viewlb":
-      viewlootboxes(message, args.slice(1));
-      break;
-    case "register":
-      registerUser(message, args.slice(1));
-      break;
-    case "crystals":
-    case "shards":
-      printCrystalShards(message, args.slice(1));
-      break;
-    case "awardcrystals":
-    case "awardshards":
-    case "givecrystals":
-    case "giveshards":
-      awardCrystalShards(message, args.slice(1));
-      break;
-    case "removecrystals":
-    case "removeshards":
-      removeCrystalShards(message, args.slice(1));
-      break;
-    default:
-      console.log("Args: "+ args);
-      message.channel.send('Invalid Command!');
+  }
+  else{
+    message.channel.send('Please register your account for Flowery Dress Up using $register');
   }
 }
 /**
@@ -632,4 +641,16 @@ async function buyLootBox(message, args){
     Embed.printError(message, err.message?err.message:err);
   }
 }
+
+async function IsUserRegister(message){
+
+    let results = await CrystalShardCurrency.selectCrystalShards(message.author.id)
+    if(results != false)
+    {
+      IsRegistered = true;
+    }
+    else{
+      IsRegistered = false;
+    }
+  }
 

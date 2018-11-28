@@ -23,6 +23,7 @@ module.exports = {
     var foundItem;
     var highestRarity;
     var highestRarityFound = false;
+    var itemRarity;
 
     if(!RarityPool.Special == 0)
     {
@@ -70,6 +71,7 @@ module.exports = {
             {
                 Embed.printMessage(message, "<:inAwe:417515935331778560> WOW! You are super lucky! <:inAwe:417515935331778560>");
             }
+            itemRarity = "Special";
         }
         //Legendary
         if (!foundItem && rngNum < RarityPool.Legendary) {
@@ -82,6 +84,7 @@ module.exports = {
             {
                 Embed.printMessage(message, "You were so close to a Special item! <:tehepelo:458997346617786378>");
             }
+            itemRarity = "Legendary";
         }
         //Exotic
         if (!foundItem && rngNum < RarityPool.Exotic) {
@@ -94,6 +97,7 @@ module.exports = {
             {
                 Embed.printMessage(message, "You were so close to a Legendary item! <:tehepelo:458997346617786378>");
             }
+            itemRarity = "Exotic";
         }
         //Rare
         if (!foundItem && rngNum < RarityPool.Rare) {
@@ -106,6 +110,7 @@ module.exports = {
             {
                 Embed.printMessage(message, "You were so close to an Exotic item! <:tehepelo:458997346617786378>");
             }
+            itemRarity = "Rare";
         }
         //Masterwork
         if (!foundItem && rngNum < RarityPool.Masterwork) {
@@ -118,6 +123,7 @@ module.exports = {
             {
                 Embed.printMessage(message, "You were so close to a Rare item! <:tehepelo:458997346617786378>");
             }
+            itemRarity = "Masterwork";
         }
         //Fine
         if (!foundItem && rngNum < RarityPool.Fine) {
@@ -130,6 +136,7 @@ module.exports = {
             {
                 Embed.printMessage(message, "You were so close to a Masterwork item! <:tehepelo:458997346617786378>");
             }
+            itemRarity = "Fine";
         }
         //Basic
         if (!foundItem && rngNum < RarityPool.Basic) {
@@ -145,6 +152,8 @@ module.exports = {
             throw Error("Unable to take Flowers.");
         }
 
+        
+
         if(!foundItem){
             throw Error("Oops.  Your box appeared to be empty.  Better luck next time.");
         }
@@ -159,26 +168,11 @@ module.exports = {
         message.channel.send('', {
             files: [buffer1]
         });
+        Embed.printMessage(message, "You rolled " + foundItem.ItemName + " (" + itemRarity + "rarity).");
     }
     else 
     {
         Embed.printError(message, "Nothing happened because you are poor")
         //Message bad things
-    }
-  }
-
-  function RollForRarityRoll(dropChance)
-  {
-    var dropChanceRoll = Math.floor((Math.random()*100) + 1);
-    console.log(dropChance + " >= " + dropChanceRoll);
-    if(dropChance >= dropChanceRoll)
-    {
-        console.log("True");
-        return true;
-    }
-    else
-    {
-        console.log("False");
-        return false;
     }
   }
