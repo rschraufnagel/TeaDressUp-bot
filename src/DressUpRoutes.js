@@ -192,15 +192,15 @@ async function printCharacterValue(message, args) {
       }
     }
 
-    let row;
     if(isNaN(limit) || limit<=0){
-      row = await getDressUpItem.selectUserCharacterValue(userId);
+      let row = await getDressUpItem.selectUserCharacterValue(userId);
+      let username = message.client.users.get(userId).username;
+      Embed.printMessage(message, username + "'s value is " + row.Value);
     }else{
-      row = await getDressUpItem.selectUserCharacterTopValue(userId, limit);
+      let row = await getDressUpItem.selectUserCharacterTopValue(userId, limit);
+      let username = message.client.users.get(userId).username;
+      Embed.printMessage(message, username + "'s top "+ limit + " item value is " + row.Value);
     }
-
-    let username = message.client.users.get(userId).username;
-    Embed.printMessage(message, username + "'s value is " + row.Value);
   }catch(err){
     console.error('printCharacterValue Error : ' + err + " - " + err.stack);
     Embed.printError(message, err.message?err.message:err);
