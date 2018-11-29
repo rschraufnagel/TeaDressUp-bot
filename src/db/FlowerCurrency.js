@@ -11,7 +11,7 @@ module.exports = {
 
 async function selectUserQuantity (userId) {
   let db = new sqlite3.Database(config.nadeko_connection, (err) => {if (err) {reject(err);}});
-  let sql = "select Amount AS Quantity from currency where userid = ?";
+  let sql = "select CurrencyAmount AS Quantity from DiscordUser where UserId = ?";
   let row = await getAsync(db, sql, [userId]);
   if(!row){
     row = {Quantity:0};
@@ -22,7 +22,7 @@ async function selectUserQuantity (userId) {
 
 async function take (userId, quantity) {
   let db = new sqlite3.Database(config.nadeko_connection, (err) => {if (err) {reject(err);}});
-  let sql = "UPDATE currency SET Amount = Amount-? where UserId = ? AND Amount >= ?";
+  let sql = "UPDATE DiscordUser SET CurrencyAmount = CurrencyAmount-? where UserId = ? AND CurrencyAmount >= ?";
   let updated = await updateAsync(db, sql, [Math.abs(quantity), userId, Math.abs(quantity)]);
   if(updated==0){
     throw Error("Cannot take " + quantity+ " Flowers from user.");
