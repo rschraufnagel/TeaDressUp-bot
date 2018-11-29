@@ -15,7 +15,8 @@ module.exports = {
   selectUserCharacterTopValue : selectUserCharacterTopValue,
   selectUserCharacterItems : selectUserCharacterItems,
   getRandomRarityItem: getRandomRarityItem,
-  getRandomSpecialItem : getRandomSpecialItem
+  getRandomSpecialItem : getRandomSpecialItem,
+  selctUserCharacterItemsNotEquipped:selctUserCharacterItemsNotEquipped
 }
 
 
@@ -119,6 +120,15 @@ async function  selectUserCharacterTopValue(userid, limit) {
 async function  selectUserCharacterItems(userid) {
   let db = new sqlite3.Database(config.dressup_connection, (err) => {if (err) {reject(err);}});
   let sqlquery = "Select DressUpItems.ItemId,Sequence,ItemName,FileName,Value from DressUpItems INNER JOIN DiscordUserDressUpItemsOwned ON DiscordUserDressUpItemsOwned.ItemId = DressUpItems.ItemId WHERE UserId = ? and Sequence is not null ORDER BY Sequence ASC";
+  let rows = await allAsync(db, sqlquery, [userid]);
+  db.close();
+
+  return rows;
+}
+
+async function  selctUserCharacterItemsNotEquipped(userid) {
+  let db = new sqlite3.Database(config.dressup_connection, (err) => {if (err) {reject(err);}});
+  let sqlquery = "Select DressUpItems.ItemId,Sequence,ItemName,FileName,Value from DressUpItems INNER JOIN DiscordUserDressUpItemsOwned ON DiscordUserDressUpItemsOwned.ItemId = DressUpItems.ItemId WHERE UserId = ?";
   let rows = await allAsync(db, sqlquery, [userid]);
   db.close();
 

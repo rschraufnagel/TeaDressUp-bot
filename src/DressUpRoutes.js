@@ -33,6 +33,10 @@ module.exports = async function (message, messageContent = message.content) {
       case "equipids":
         printCharacterIds(message, args.slice(1));
         break;
+      case "invids":
+      case "inventoryids":
+        printCharacterIdsNotEquiped(message, args.slice(1));
+        break;
       case "viewinventory":
       case "viewinv":
         printInventoryItems(message, args.slice(1));
@@ -227,6 +231,17 @@ async function printCharacterItems(message, args){
 async function printCharacterIds(message, args){
   try{
     let items = await getDressUpItem.selectUserCharacterItems(message.author.id);
+    let equippedIds = items.map(item => item.ItemId);
+    Embed.printMessage(message, equippedIds.join(" "));
+  }catch(err){
+    console.error('printCharacterIds Error : ' + err + " - " + err.stack);
+    Embed.printError(message, err.message?err.message:err);
+  }
+}
+
+async function printCharacterIdsNotEquiped(message, args){
+  try{
+    let items = await getDressUpItem.selctUserCharacterItemsNotEquipped(message.author.id);
     let equippedIds = items.map(item => item.ItemId);
     Embed.printMessage(message, equippedIds.join(" "));
   }catch(err){
