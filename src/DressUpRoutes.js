@@ -173,7 +173,7 @@ async function printCharacterValue(message, args) {
       if(args.length == 1){
         if(isNaN(args[0])){
           if(argUserId==args[0]){
-            throw Error("With one argument it must either be @user or the number of equipped values to sum (items from the top).");
+            throw Error("The command must be one of the following: \n charval @user \n charval <number> \n charval @user <number>");
           }else{
             userId = argUserId;
           }
@@ -184,10 +184,8 @@ async function printCharacterValue(message, args) {
         userId = argUserId;
         limit = args[1];
 
-        if(argUserId==args[0]){
-          throw Error("With multiple arguments the first must be @user");
-        }else if(isNaN(args[1])){
-          throw Error("With multiple arguments the second must be the number of equipped values to sum (items from the top).");
+        if(argUserId==args[0] || isNaN(args[1])){
+          throw Error("The command must be one of the following: \n charval @user \n charval <number> \n charval @user <number>");
         }
       }
     }
