@@ -590,10 +590,10 @@ async function unEquipItem(message, args){
     }
     let printMessage = "";
     if(unowned.length>0){
-      printMessage+="\nYou do not own " + unowned.join(" ");
+      printMessage+="\nYou do not own: " + unowned.join(" ");
     }
     if(notequipped.length>0){
-      printMessage+="\n These items were not equipped " + notequipped.join(" ");
+      printMessage+="\n These items were not equipped: " + notequipped.join(" ");
     }
     if(printMessage.length>0){
       if(successes.length>0){
