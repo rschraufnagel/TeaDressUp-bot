@@ -16,8 +16,13 @@ module.exports = {
  */
 function createEmbedPage(page, items, title, itemEmbedFunction){
   var pageLength = config.pageLength;
+  if(isNaN(page)){
+    page=1;
+  }
   var curPage = parseInt(page);
   var maxPage = Math.ceil(items.length / pageLength);
+  curPage = Math.max(curPage, 1);
+  curPage = Math.min(curPage, maxPage);
   var printItems = items.slice((pageLength * (curPage - 1)), (pageLength * curPage));
   if(printItems.length==0){
     curPage=0;
