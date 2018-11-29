@@ -30,6 +30,9 @@ module.exports = async function (message, messageContent = message.content) {
       case "viewequips":
         printCharacterItems(message, args.slice(1));
         break;
+      case "equipids":
+        printCharacterIds(message, args.slice(1));
+        break;
       case "viewinventory":
       case "viewinv":
         printInventoryItems(message, args.slice(1));
@@ -192,6 +195,16 @@ async function printCharacterItems(message, args){
   try{
     let items = await getDressUpItem.selectUserCharacterItems(message.author.id);
     Embed.printItems(message, items);  
+  }catch(err){
+    console.error('printCharacterItems Error : ' + err + " - " + err.stack);
+    Embed.printError(message, err.message?err.message:err);
+  }
+}
+async function printCharacterIds(message, args){
+  try{
+    let items = await getDressUpItem.selectUserCharacterItems(message.author.id);
+    let equippedIds = items.map(item => item.ItemId);
+    Embed.printMessage(message, equippedIds.join(" "));
   }catch(err){
     console.error('printCharacterItems Error : ' + err + " - " + err.stack);
     Embed.printError(message, err.message?err.message:err);
@@ -553,16 +566,42 @@ async function equipItem(message, args){
  */
 async function unEquipItem(message, args){
   try{
-    let item = await getDressUpItem.selectUserItem(message.author.id, args[0]);
-    
-    if(!item){
-      throw Error("You do not own item "+ args[0]);
-    }else if(item.Sequence>0){
-      let updateCount = await updateDressUpItem.removeSequence(message.author.id, item.Sequence);
-      viewCharacter(message)
-    }else{
-      throw Error("Item "+ args[0] + " is not currently equipped on your character.");
+    let unowned = [];
+    let notequipped = [];
+    let successes = []
+    for(let i=0; i<args.length; i++){
+      let itemtoUnequip = args[i];
+      try{
+        let item = await getDressUpItem.selectUserItem(message.author.id, itemtoUnequip);
+        
+        if(!item){
+          unowned.push(itemtoUnequip);
+        }else if(item.Sequence>0){
+          let updateCount = await updateDressUpItem.removeSequence(message.author.id, item.Sequence);
+          successes.push(itemtoUnequip);
+        }else{
+          notequipped.push(itemtoUnequip);
+        }
+      }catch(unequipError){
+        let newError = "Error unequipping item "+ itemtoUnequip + " : ";
+        newError += unequipError.message?unequipError.message:unequipError
+        throw Error(newError);
+      }
     }
+    let printMessage = "";
+    if(unowned.length>0){
+      printMessage+="\nYou do not own: " + unowned.join(" ");
+    }
+    if(notequipped.length>0){
+      printMessage+="\n These items were not equipped: " + notequipped.join(" ");
+    }
+    if(printMessage.length>0){
+      if(successes.length>0){
+        printMessage+="\n\nOther items were unequipped."
+      }
+      Embed.printError(message, printMessage);
+    }
+    viewCharacter(message)
   }catch(err){
     console.error('unEquipItem Error : ' + err + " - " + err.stack);
     Embed.printError(message, err.message?err.message:err);
