@@ -12,6 +12,7 @@ module.exports = {
   selectUserItem : selectUserItem,
   selectUserItems : selectUserItems,
   selectUserCharacterValue : selectUserCharacterValue,
+  selectUserCharacterTopValue : selectUserCharacterTopValue,
   selectUserCharacterItems : selectUserCharacterItems,
   getRandomRarityItem: getRandomRarityItem,
   getRandomSpecialItem : getRandomSpecialItem
@@ -102,6 +103,14 @@ async function  selectUserCharacterValue(userid) {
   let db = new sqlite3.Database(config.dressup_connection, (err) => {if (err) {reject(err);}});
   let sqlquery = "Select sum(Value) AS Value from DressUpItems INNER JOIN DiscordUserDressUpItemsOwned ON DiscordUserDressUpItemsOwned.ItemId = DressUpItems.ItemId WHERE UserId = ? AND Sequence>0";
   let row = await getAsync(db, sqlquery, [userid]);
+  db.close();
+
+  return row;
+}
+async function  selectUserCharacterTopValue(userid, limit) {
+  let db = new sqlite3.Database(config.dressup_connection, (err) => {if (err) {reject(err);}});
+  let sqlquery = "Select sum(Value) AS Value FROM (SELECT Value FROM DressUpItems INNER JOIN DiscordUserDressUpItemsOwned ON DiscordUserDressUpItemsOwned.ItemId = DressUpItems.ItemId WHERE UserId = ? AND Sequence>0 ORDER BY Sequence DESC Limit ?)";
+  let row = await getAsync(db, sqlquery, [userid, limit]);
   db.close();
 
   return row;

@@ -167,11 +167,37 @@ async function viewCharacter(message, args) {
 async function printCharacterValue(message, args) {
   try{
     let userId = message.author.id;
+    let limit = 0;
     if(args && args.length>0){
       let argUserId = getUserId(args[0]);
-      userId = argUserId;
+      if(args.length == 1){
+        if(isNaN(args[0])){
+          if(argUserId==args[0]){
+            throw Error("With one argument it must either be @user or the number of equipped values to sum (items from the top).");
+          }else{
+            userId = argUserId;
+          }
+        }else{
+          limit = args[0];
+        }
+      }else{
+        userId = argUserId;
+        limit = args[1];
+
+        if(argUserId==args[0]){
+          throw Error("With multiple arguments the first must be @user");
+        }else if(isNaN(args[1])){
+          throw Error("With multiple arguments the second must be the number of equipped values to sum (items from the top).");
+        }
+      }
     }
-    let row = await getDressUpItem.selectUserCharacterValue(userId);
+
+    let row;
+    if(isNaN(limit) || limit<=0){
+      row = await getDressUpItem.selectUserCharacterValue(userId);
+    }else{
+      row = await getDressUpItem.selectUserCharacterTopValue(userId, limit);
+    }
 
     let username = message.client.users.get(userId).username;
     Embed.printMessage(message, username + "'s value is " + row.Value);
