@@ -98,7 +98,7 @@ module.exports = {
             }
             if(Math.abs(RarityPool.Special - rngNum) <= 3 && !RarityPool.Special)
             {
-                Embed.printMessage(message, "You were so close to a Special item! <:tehepelo:458997346617786378>");
+                Embed.printMessage(message, "You were so close to a Special item! <:tehepelo:412986455640768516>");
             }
             itemRarity = "Legendary";
         }
@@ -111,7 +111,7 @@ module.exports = {
             }
             if(Math.abs(RarityPool.Legendary - rngNum) <= 3 && !RarityPool.Legendary)
             {
-                Embed.printMessage(message, "You were so close to a Legendary item! <:tehepelo:458997346617786378>");
+                Embed.printMessage(message, "You were so close to a Legendary item! <:tehepelo:412986455640768516>");
             }
             itemRarity = "Exotic";
         }
@@ -124,7 +124,7 @@ module.exports = {
             }
             if(Math.abs(RarityPool.Exotic - rngNum) <= 3 && !RarityPool.Exotic)
             {
-                Embed.printMessage(message, "You were so close to an Exotic item! <:tehepelo:458997346617786378>");
+                Embed.printMessage(message, "You were so close to an Exotic item! <:tehepelo:412986455640768516>");
             }
             itemRarity = "Rare";
         }
@@ -137,7 +137,7 @@ module.exports = {
             }
             if(Math.abs(RarityPool.Rare - rngNum) <= 3 && !RarityPool.Rare)
             {
-                Embed.printMessage(message, "You were so close to a Rare item! <:tehepelo:458997346617786378>");
+                Embed.printMessage(message, "You were so close to a Rare item! <:tehepelo:412986455640768516>");
             }
             itemRarity = "Masterwork";
         }
@@ -150,7 +150,7 @@ module.exports = {
             }
             if(Math.abs(RarityPool.Masterwork - rngNum) <= 3 || !RarityPool.Masterwork)
             {
-                Embed.printMessage(message, "You were so close to a Masterwork item! <:tehepelo:458997346617786378>");
+                Embed.printMessage(message, "You were so close to a Masterwork item! <:tehepelo:412986455640768516>");
             }
             itemRarity = "Fine";
         }
@@ -159,7 +159,7 @@ module.exports = {
             foundItem = await getDressUpItem.getRandomRarityItem("basic");
             if(Math.abs(RarityPool.Fine - rngNum) <= 3 || RarityPool.Fine)
             {
-                Embed.printMessage(message, "You were so close to a fine item! <:tehepelo:458997346617786378>");
+                Embed.printMessage(message, "You were so close to a fine item! <:tehepelo:412986455640768516>");
             }
             itemRarity = "Basic";
         }
@@ -188,6 +188,7 @@ module.exports = {
         let v = await message.channel.send('', {
           files: [buffer1]
         });
+        Embed.printMessage(message, "You now have " + currentCurrency + " 🌸")
     }
     else 
     {
