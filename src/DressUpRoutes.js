@@ -124,7 +124,7 @@ function getArgs(messageContent, startIndex=2){
   return args;
 }
 function getUserId(argumentValue){
-  var regex = /^<@(.*)>$/;
+  var regex = /^<@!?(.*)>$/;
   return argumentValue.replace(regex, "$1");
 }
 
