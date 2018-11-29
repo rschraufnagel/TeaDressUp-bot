@@ -189,6 +189,12 @@ module.exports = {
           files: [buffer1]
         });
         Embed.printMessage(message, "You now have " + currentCurrency + " 🌸")
+
+        if(lootBoxinfo.Currency=="CrystalShards"){
+            Embed.printMessage(message, "You now have " + currentCurrency + " 💠")
+        }else if(lootBoxinfo.Currency=="Flowers"){
+            Embed.printMessage(message, "You now have " + currentCurrency + " 🌸")
+        }
     }
     else 
     {
