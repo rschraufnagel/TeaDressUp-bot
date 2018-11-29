@@ -206,7 +206,7 @@ async function printCharacterIds(message, args){
     let equippedIds = items.map(item => item.ItemId);
     Embed.printMessage(message, equippedIds.join(" "));
   }catch(err){
-    console.error('printCharacterItems Error : ' + err + " - " + err.stack);
+    console.error('printCharacterIds Error : ' + err + " - " + err.stack);
     Embed.printError(message, err.message?err.message:err);
   }
 }
