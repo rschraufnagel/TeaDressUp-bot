@@ -1,5 +1,5 @@
 const sqlite3 = require('sqlite3').verbose();
-const config = require('../config');
+const config = require('../../config');
 
 //Retrieve UserId for DressUpItemsOwned
 function selectUser(user) {

@@ -1,5 +1,5 @@
 const sqlite3 = require('sqlite3').verbose();
-const config = require('../config');
+const config = require('../../config');
 const getAsync = require('./AsyncCRUD').getAsync;
 const allAsync = require('./AsyncCRUD').allAsync;
 const updateAsync = require('./AsyncCRUD').updateAsync;
