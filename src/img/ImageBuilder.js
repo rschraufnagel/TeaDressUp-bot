@@ -1,3 +1,4 @@
+
 const sharp = require('sharp');
 const fs = require('fs');
 const request = require('request-promise-native');
@@ -7,6 +8,8 @@ module.exports = {
   downloadImage : downloadImage,
   getBuffer : getBuffer
 }
+
+
 
 function downloadImage(url, imageName, callbackFunction){
   request.head(url, function(err, response, body){
@@ -21,8 +24,10 @@ function getPreviewSequence(previewBodyFileName, previewFileNames){
   let background = [];
   let foreground = [];
   let keyword_back = "back";
+  let regex_Back = /.*_[^_]*back[^_]*/;
   for(let i=0; i<previewFileNames.length; i++){
-    if(previewFileNames[i].includes(keyword_back)){
+    let result = previewFileNames[i].match(regex_Back);
+    if(result && previewFileNames[i] == result[0]){
       background.push(previewFileNames[i]);
     }else{
       foreground.push(previewFileNames[i]);
