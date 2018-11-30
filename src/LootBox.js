@@ -85,7 +85,7 @@ module.exports = {
             foundItem = await getDressUpItem.getRandomSpecialItem(lootBoxId);
             if(highestRarity == "special")
             {
-                Embed.printMessage(message, "<:inAwe:417515935331778560> WOW! You are super lucky! <:inAwe:417515935331778560>");
+                Embed.printMessage(message, "<:inAwe:417515935331778560> WOW! "+ message.author.username+" is super lucky! <:inAwe:417515935331778560>");
             }
             itemRarity = "Special";
         }
@@ -94,11 +94,11 @@ module.exports = {
             foundItem = await getDressUpItem.getRandomRarityItem("legendary");
             if(highestRarity == "legendary")
             {
-                Embed.printMessage(message, "<:inAwe:417515935331778560> WOW! You are super lucky! <:inAwe:417515935331778560>");
+                Embed.printMessage(message, "<:inAwe:417515935331778560> WOW! "+ message.author.username+" is super lucky! <:inAwe:417515935331778560>");
             }
             if(Math.abs(RarityPool.Special - rngNum) <= 3 && !RarityPool.Special)
             {
-                Embed.printMessage(message, "You were so close to a Special item! <:tehepelo:412986455640768516>");
+                Embed.printMessage(message, message.author.username+" was so close to a Special item! <:tehepelo:412986455640768516>");
             }
             itemRarity = "Legendary";
         }
@@ -107,11 +107,11 @@ module.exports = {
             foundItem = await getDressUpItem.getRandomRarityItem("exotic");
             if(highestRarity == "exotic")
             {
-                Embed.printMessage(message, "<:inAwe:417515935331778560> WOW! You are super lucky! <:inAwe:417515935331778560>");
+                Embed.printMessage(message, "<:inAwe:417515935331778560> WOW! "+ message.author.username+" is super lucky! <:inAwe:417515935331778560>");
             }
             if(Math.abs(RarityPool.Legendary - rngNum) <= 3 && !RarityPool.Legendary)
             {
-                Embed.printMessage(message, "You were so close to a Legendary item! <:tehepelo:412986455640768516>");
+                Embed.printMessage(message, message.author.username+" was so close to a Legendary item! <:tehepelo:412986455640768516>");
             }
             itemRarity = "Exotic";
         }
@@ -120,11 +120,11 @@ module.exports = {
             foundItem = await getDressUpItem.getRandomRarityItem("rare");
             if(highestRarity == "rare")
             {
-                Embed.printMessage(message, "<:inAwe:417515935331778560> WOW! You are super lucky! <:inAwe:417515935331778560>");
+                Embed.printMessage(message, "<:inAwe:417515935331778560> WOW! "+ message.author.username+" is super lucky! <:inAwe:417515935331778560>");
             }
             if(Math.abs(RarityPool.Exotic - rngNum) <= 3 && !RarityPool.Exotic)
             {
-                Embed.printMessage(message, "You were so close to an Exotic item! <:tehepelo:412986455640768516>");
+                Embed.printMessage(message, message.author.username+" was so close to an Exotic item! <:tehepelo:412986455640768516>");
             }
             itemRarity = "Rare";
         }
@@ -133,11 +133,11 @@ module.exports = {
             foundItem = await getDressUpItem.getRandomRarityItem("masterwork");
             if(highestRarity == "masterwork")
             {
-                Embed.printMessage(message, "<:inAwe:417515935331778560> WOW! You are super lucky! <:inAwe:417515935331778560>");
+                Embed.printMessage(message, "<:inAwe:417515935331778560> WOW! "+ message.author.username+" is super lucky! <:inAwe:417515935331778560>");
             }
             if(Math.abs(RarityPool.Rare - rngNum) <= 3 && !RarityPool.Rare)
             {
-                Embed.printMessage(message, "You were so close to a Rare item! <:tehepelo:412986455640768516>");
+                Embed.printMessage(message, message.author.username+" was so close to a Rare item! <:tehepelo:412986455640768516>");
             }
             itemRarity = "Masterwork";
         }
@@ -146,11 +146,11 @@ module.exports = {
             foundItem = await getDressUpItem.getRandomRarityItem("fine");
             if(highestRarity == "fine")
             {
-                Embed.printMessage(message, "<:inAwe:417515935331778560> WOW! You are super lucky! <:inAwe:417515935331778560>");
+                Embed.printMessage(message, "<:inAwe:417515935331778560> WOW! "+ message.author.username+" is super lucky! <:inAwe:417515935331778560>");
             }
             if(Math.abs(RarityPool.Masterwork - rngNum) <= 3 || !RarityPool.Masterwork)
             {
-                Embed.printMessage(message, "You were so close to a Masterwork item! <:tehepelo:412986455640768516>");
+                Embed.printMessage(message, message.author.username+" was so close to a Masterwork item! <:tehepelo:412986455640768516>");
             }
             itemRarity = "Fine";
         }
@@ -159,7 +159,7 @@ module.exports = {
             foundItem = await getDressUpItem.getRandomRarityItem("basic");
             if(Math.abs(RarityPool.Fine - rngNum) <= 3 || RarityPool.Fine)
             {
-                Embed.printMessage(message, "You were so close to a fine item! <:tehepelo:412986455640768516>");
+                Embed.printMessage(message, message.author.username+" was so close to a fine item! <:tehepelo:412986455640768516>");
             }
             itemRarity = "Basic";
         }
@@ -172,7 +172,7 @@ module.exports = {
         
 
         if(!foundItem){
-            throw Error("Oops.  Your box appeared to be empty.  Better luck next time.");
+            throw Error("Oops.  "+message.author.username+"'s box appeared to be empty.  Better luck next time.");
         }
 
 
@@ -182,18 +182,18 @@ module.exports = {
         }
 
 
-        Embed.printMessage(message, "You rolled " + foundItem.ItemName + " (" + itemRarity + ") #"+ foundItem.ItemId);
+        Embed.printMessage(message, message.author.username+" rolled " + foundItem.ItemName + " (" + itemRarity + ") #"+ foundItem.ItemId);
         let imageNames = await ImageBuilder.getPreviewSequence(config.previewBodyFileName, [foundItem.FileName]);
         let buffer1 = await ImageBuilder.getBuffer(imageNames);
         let v = await message.channel.send('', {
           files: [buffer1]
         });
 
-        Embed.printMessage(message, "You now have " + currentCurrency + config.currencyemoji[lootBoxinfo.Currency]);
+        Embed.printMessage(message, message.author.username + " now has " + currentCurrency + config.currencyemoji[lootBoxinfo.Currency]);
     }
     else 
     {
-        Embed.printError(message, "Nothing happened because you are poor " + config.currencyemoji[lootBoxinfo.Currency]);
+        Embed.printError(message, "Nothing happened because "+message.author.username+" is poor " + config.currencyemoji[lootBoxinfo.Currency]);
         //Message bad things
     }
   }
