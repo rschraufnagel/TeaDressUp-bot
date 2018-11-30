@@ -137,12 +137,10 @@ function getUserId(argumentValue){
   return argumentValue.replace(regex, "$1");
 }
 
+
+const Discord = require("discord.js");
 /**
  * Print the current users Saved Character.
- * @param {*} message 
- */
-/**
- * print the given user id's character or the current user's character if no argument given.
  * @param {*} message 
  * @param {*} args userid (optional)
  */
@@ -548,7 +546,7 @@ async function addNewItem(message, args){
         }
       });
     }catch(err){
-      console.error('viewCharacter Error : ' + err + " - " + err.stack);
+      console.error('addNewItem Error : ' + err + " - " + err.stack);
       Embed.printError(message, err.message?err.message:err);
     }
   }else{
