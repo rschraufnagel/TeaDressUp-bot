@@ -49,14 +49,10 @@ async function addListeners(authorId, response, page, itemList, title, itemEmbed
   //var filterNext = (reaction, user) => { return (reaction.emoji.name === '▶' && user.id === authorId) };
 
   
-  var filterReactions = (reaction, user) => { return ( ['⏮', '⏪', '◀', '▶', '⏩', '⏭'].includes(reaction.emoji.name) && user.id === authorId) };
+  var filterReactions = (reaction, user) => { return ( ['◀', '▶'].includes(reaction.emoji.name) && user.id === authorId) };
   if(firstTime){
-    await response.react('⏮');
-    await response.react('⏪');
     await response.react('◀');
     await response.react('▶');
-    await response.react('⏩');
-    await response.react('⏭');
   }
   
   let collector = response.createReactionCollector(filterReactions, {time: 15000});
@@ -66,23 +62,11 @@ async function addListeners(authorId, response, page, itemList, title, itemEmbed
     var nextPage = page;
     collector.stop();
     switch (r1.emoji.name) {
-      case '⏮':
-          nextPage = 1;
-          break;
-      case '⏪':
-          nextPage -= 5;
-          break;
       case '◀':
         nextPage--;
         break;
       case '▶':
         nextPage++;
-        break;
-      case '⏩':
-        nextPage += 5;
-        break;
-      case '⏭':
-        nextPage = maxPage;
         break;
     };
     nextPage = Math.max(nextPage, minPage);
