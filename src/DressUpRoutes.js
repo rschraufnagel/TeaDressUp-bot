@@ -208,8 +208,14 @@ async function printCharacterValue(message, args) {
 
 async function printAllItems(message, orderBy, args){
   try{
+    let pageNumber = 1;
+    if(!isNaN(args[0])){
+      pageNumber = args[0];
+      args = args.slice(1);
+    }
+
     let items = await getDressUpItem.selectItemsByTag(orderBy, args);
-    Embed.printItems(message, items);
+    Embed.printItems(message, items, pageNumber);
   }catch(err){
     console.error('printAllItems Error : ' + err + " - " + err.stack);
     Embed.printError(message, err.message?err.message:err);
@@ -218,7 +224,7 @@ async function printAllItems(message, orderBy, args){
 async function printCharacterItems(message, args){
   try{
     let items = await getDressUpItem.selectUserCharacterItems(message.author.id);
-    Embed.printItems(message, items);  
+    Embed.printItems(message, items, args[0]);
   }catch(err){
     console.error('printCharacterItems Error : ' + err + " - " + err.stack);
     Embed.printError(message, err.message?err.message:err);
@@ -237,7 +243,7 @@ async function printCharacterIds(message, args){
 async function printInventoryItems(message, args){
   try{
     let items = await getDressUpItem.selectUserItems(message.author.id);
-    Embed.printInventoryItems(message, items);  
+    Embed.printInventoryItems(message, items, args[0]);
   }catch(err){
     console.error('printInventoryItems Error : ' + err + " - " + err.stack);
     Embed.printError(message, err.message?err.message:err);
@@ -672,7 +678,7 @@ async function unEquipAllItems(message, args){
 async function viewlootboxes(message, args) {
   try{
     let lootboxes = await getLootbox.selectAllLootBoxes();
-    Embed.printLootboxes(message, lootboxes);
+    Embed.printLootboxes(message, lootboxes, args[0]);
   }catch(err){
     console.error('viewCharacter Error : ' + err + " - " + err.stack);
     Embed.printError(message, err.message?err.message:err);
