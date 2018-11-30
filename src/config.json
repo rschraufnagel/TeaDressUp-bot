@@ -1,6 +1,6 @@
 {
-  "dressup_connection":"./database/DressUp.db"
- ,"nadeko_connection":"./database/NadekoBot.db"
+  "dressup_connection":"./dev_database/DressUp.db"
+ ,"nadeko_connection":"./dev_database/NadekoBot.db"
  ,"previewBodyFileName" : "character_light_standing1.png"
  ,"onRegisterItems" : [52, 531, 532]
  ,"pageLength": 8
