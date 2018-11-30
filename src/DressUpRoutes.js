@@ -6,7 +6,7 @@ const getLootbox = require('./db/getLootBox');
 const Embed = require('./message/Message');
 const config = require('./config');
 const lootBox = require('./LootBox');
-const ItemStudioRoutes = require('./ItemStudioRoutes');
+//const ItemStudioRoutes = require('./ItemStudioRoutes');
 
 var IsRegistered = false;
 
