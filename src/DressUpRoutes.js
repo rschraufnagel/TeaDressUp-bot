@@ -119,7 +119,7 @@ module.exports = async function (message, messageContent = message.content) {
     }
   }
   else{
-    message.channel.send('Please register your account for Flowery Dress Up using $register');
+    message.channel.send(message.author.username+' please register your account for Flowery Dress Up using $register');
   }
 }
 /**
@@ -136,7 +136,6 @@ function getUserId(argumentValue){
   var regex = /^<@!?(.*)>$/;
   return argumentValue.replace(regex, "$1");
 }
-
 
 /**
  * Print the current users Saved Character.
@@ -160,6 +159,7 @@ async function viewCharacter(message, args) {
       throw Error("No items allocated to user character.");
     }
     let buffer1 = await ImageBuilder.getBuffer(fileNames);
+    
     message.channel.send('', {
       files: [buffer1]
     });
@@ -313,7 +313,7 @@ async function giveItem(message, args){
       Embed.printError(message, err.message?err.message:err);
     }
   }else{
-    Embed.printError(message, "You don't have access to this command.");
+    Embed.printError(message, message.author.username + " doesn't have access to this command.");
   }
 }
 async function loopGiveItems(userId, itemsToAdd){
@@ -370,7 +370,7 @@ async function takeItem(message, args){
       Embed.printError(message, err.message?err.message:err);
     }
   }else{
-    Embed.printError(message, "You don't have access to this command.");
+    Embed.printError(message, message.author.username + " doesn't have access to this command.");
   }
 }
 
@@ -406,7 +406,7 @@ async function buildMissingPreviews(message, args){
       Embed.printError(message, err.message?err.message:err);
     }
   }else{
-    Embed.printError(message, "You don't have access to this command.");
+    Embed.printError(message, message.author.username + " doesn't have access to this command.");
   }
 }
 
@@ -421,14 +421,14 @@ async function registerUser(message, args){
     let userId = message.author.id;
     let user = await CrystalShardCurrency.selectUserQuantity(userId)
     if(user.Quantity>=0){
-      throw Error("You are already registered");
+      throw Error(message.author.username + " is are already registered");
     }
 
     await CrystalShardCurrency.addUser(userId);
     //Give users default Body, Eyes, and mouth
     await loopGiveItems(userId, config.onRegisterItems);
     await equipItem(message, config.onRegisterItems);
-    Embed.printMessage(message, ":sparkles: You have registered! :sparkles:\n\n Here is your character.");
+    Embed.printMessage(message, ":sparkles: "+message.author.username+" has registered! :sparkles:\n\n Here is your character.");
   }catch(err){
     console.error('registerUser Error : ' + err + " - " + err.stack);
     Embed.printError(message, err.message?err.message:err);
@@ -480,7 +480,7 @@ async function awardCrystalShards(message, args){
       Embed.printError(message, err.message?err.message:err);
     }
   }else{
-    Embed.printError(message, "You don't have access to this command.");
+    Embed.printError(message, message.author.username+" doesn't have access to this command.");
   }
 }
 
@@ -503,7 +503,7 @@ async function removeCrystalShards(message, args){
       Embed.printError(message, err.message?err.message:err);
     }
   }else{
-    Embed.printError(message, "You don't have access to this command.");
+    Embed.printError(message, message.author.username+" doesn't have access to this command.");
   }
 }
 
@@ -552,7 +552,7 @@ async function addNewItem(message, args){
       Embed.printError(message, err.message?err.message:err);
     }
   }else{
-    Embed.printError(message, "You don't have access to this command.");
+    Embed.printError(message, message.author.username+" doesn't have access to this command.");
   }
 }
 
@@ -584,7 +584,7 @@ async function equipItem(message, args){
             }
           }
           if(notOwned.length>0){
-            errorMsg +="You do not own item(s): " + notOwned
+            errorMsg += "Does not own item(s): " + notOwned
           }
         }
       }
@@ -598,7 +598,7 @@ async function equipItem(message, args){
         if(totalUpdates>0){
           errorMsg +="\nAll other items have been equipped."
         }
-        Embed.printError(message, errorMsg);
+        Embed.printError(message, message.author.username+" - "+errorMsg);
       }
       
       if(itemsToEquip.length>0){
@@ -640,16 +640,16 @@ async function unEquipItem(message, args){
     }
     let printMessage = "";
     if(unowned.length>0){
-      printMessage+="\nYou do not own: " + unowned.join(" ");
+      printMessage+="\n You don't own: " + unowned.join(" ");
     }
     if(notequipped.length>0){
-      printMessage+="\n These items were not equipped: " + notequipped.join(" ");
+      printMessage+="\n Items weren't equipped: " + notequipped.join(" ");
     }
     if(printMessage.length>0){
       if(successes.length>0){
         printMessage+="\n\nOther items were unequipped."
       }
-      Embed.printError(message, printMessage);
+      Embed.printError(message, message.author.username+" - "+printMessage);
     }
     viewCharacter(message)
   }catch(err){
@@ -665,9 +665,9 @@ async function replaceItem(message, args){
     let oldItem = await getDressUpItem.selectUserItem(message.author.id, args[0]);
     let newItem = await getDressUpItem.selectUserItem(message.author.id, args[1]);
     if(!oldItem){
-      throw Error("You do not own item "+ args[0]);
+      throw Error(message.author.username+" doesn't own item "+ args[0]);
     }else if(!newItem){
-      throw Error("You do not own item "+ args[1]);
+      throw Error(message.author.username+" doesn't own item "+ args[1]);
     }else{
       let updateCount = await updateDressUpItem.swapSequences(message.author.id, oldItem, newItem);
       viewCharacter(message)
@@ -688,7 +688,7 @@ async function unEquipAllItems(message, args){
   try{
     let updateCount = await updateDressUpItem.removeAllSequence(message.author.id);
 
-    Embed.printMessage(message, "Your character has been cleared.");
+    Embed.printMessage(message, message.author.username+"'s character has been cleared.");
   }catch(err){
     console.error('unEquipItem Error : ' + err + " - " + err.stack);
     Embed.printError(message, err.message?err.message:err);
