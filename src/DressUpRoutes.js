@@ -18,7 +18,7 @@ module.exports = async function (message, messageContent = message.content) {
   await IsUserRegister(message);
   if(IsRegistered || args[0] == "register")
   {
-    switch (args[0]) {
+    switch (args[0].toLowerCase()) {
       case "viewallitems":
       case "viewallitemsbyname":
         printAllItems(message, "ItemName", args.slice(1));
@@ -26,6 +26,7 @@ module.exports = async function (message, messageContent = message.content) {
       case "viewallitemsbyid":
         printAllItems(message, "ItemId", args.slice(1));
         break;
+      case "ve":
       case "vieweq":
       case "viewequips":
         printCharacterItems(message, args.slice(1));
@@ -37,6 +38,7 @@ module.exports = async function (message, messageContent = message.content) {
       case "inventoryids":
         printCharacterIdsNotEquiped(message, args.slice(1));
         break;
+      case "vi":
       case "viewinventory":
       case "viewinv":
         printInventoryItems(message, args.slice(1));
@@ -44,6 +46,7 @@ module.exports = async function (message, messageContent = message.content) {
       case "viewitem":
         viewitem(message, args.slice(1));
         break;
+      case "vc":
       case "viewchar":
         viewCharacter(message, args.slice(1));
         break;
@@ -75,7 +78,9 @@ module.exports = async function (message, messageContent = message.content) {
       case "setpreviews":
           buildMissingPreviews(message, args.slice(1));
           break;
+      case "vl":
       case "viewlb":
+      case "viewlootbox":
       if (args.length > 1)
       {
         viewLootBoxItems(message, args.slice(1));
