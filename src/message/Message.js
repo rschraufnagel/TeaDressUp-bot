@@ -15,9 +15,9 @@ function itemEmbed(msgEmbed, items) {
   var newEmbed = msgEmbed;
   for (var i = 0; i < items.length; i++) {
     var item = items[i];
-    var details = "**Value:** " + item.Value;
-    
-    newEmbed.addField(item.ItemId + ". " + item.ItemName, details + "\n---------------------------------------------", true);
+    var details = "**Val:** " + item.Value;
+    details += " `"+config.rarityemoji[item.Rarity]+"`";
+    newEmbed.addField(item.ItemId + ". " + item.ItemName, details + "\n---------------------------------------------", false);
   }
   return newEmbed;
 }
@@ -34,10 +34,10 @@ function inventoryItemEmbed(msgEmbed, items) {
   var newEmbed = msgEmbed;
   for (var i = 0; i < items.length; i++) {
     var item = items[i];
-    var details = "**Value:** " + item.Value;
-    details += "\n**Quantity:** " + item.Quantity;
-    
-    newEmbed.addField(item.ItemId + ". " + item.ItemName, details + "\n---------------------------------------------", true);
+    var details = "**Qty:** " + item.Quantity
+    details += " **Val:** " + item.Value;
+    details += " `"+config.rarityemoji[item.Rarity]+"`";
+    newEmbed.addField(item.ItemId + ". " + item.ItemName, details + "\n---------------------------------------------", false);
   }
   return newEmbed;
 }
@@ -49,25 +49,25 @@ module.exports.printLootBox = async function(message, lootbox){
   text += "\n__**Box Contents:**__";
   if(lootbox.Basic){
     //No white Heart :(
-      text += "\n`⚪` Basic Items"
+      text += "\n`"+config.rarityemoji.Basic+"` Basic Items"
   }
   if(lootbox.Fine){
-    text += "\n`💙` Fine Items"
+    text += "\n`"+config.rarityemoji.Fine+"` Fine Items"
   }
   if(lootbox.Masterwork){
-    text += "\n`💚` Masterwork Items"
+    text += "\n`"+config.rarityemoji.Masterwork+"` Masterwork Items"
   }
   if(lootbox.Rare){
-    text += "\n`💛` Rare Items"
+    text += "\n`"+config.rarityemoji.Rare+"` Rare Items"
   }
   if(lootbox.Exotic){
-    text += "\n`🧡` Exotic Items"
+    text += "\n`"+config.rarityemoji.Exotic+"` Exotic Items"
   }
   if(lootbox.Legendary){
-    text += "\n`💜` Legendary Items"
+    text += "\n`"+config.rarityemoji.Legendary+"` Legendary Items"
   }
   if(lootbox.Special){
-    text += "\n`🌟` Specialty Items"
+    text += "\n`"+config.rarityemoji.Special+"` Specialty Items"
   }
   var msg = {
     embed: {
@@ -87,25 +87,25 @@ function lootBoxListEmbed(msgEmbed, lootboxes){
     details += "\n**__Loot:__** `"
     if(lootbox.Basic){
       //No white Heart :(
-      details += "⚪"
+      details += config.rarityemoji.Basic;
     }
     if(lootbox.Fine){
-      details += "💙"
+      details += config.rarityemoji.Fine;
     }
     if(lootbox.Masterwork){
-      details += "💚"
+      details += config.rarityemoji.Masterwork;
     }
     if(lootbox.Rare){
-      details += "💛"
+      details += config.rarityemoji.Rare;
     }
     if(lootbox.Exotic){
-      details += "🧡"
+      details += config.rarityemoji.Exotic;
     }
     if(lootbox.Legendary){
-      details += "💜"
+      details += config.rarityemoji.Legendary;
     }
     if(lootbox.Special){
-      details += "🌟"
+      details += config.rarityemoji.Special;
     }
     details += "`"
     newEmbed.addField(lootbox.LootBoxId + ". " + lootbox.LootBoxName, details + "\n---------------------------------------------", true);

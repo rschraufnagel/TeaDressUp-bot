@@ -6,6 +6,7 @@ const getLootbox = require('./db/getLootBox');
 const Embed = require('./message/Message');
 const config = require('./config');
 const lootBox = require('./LootBox');
+const ItemStudioRoutes = require('./ItemStudioRoutes');
 
 var IsRegistered = false;
 
@@ -36,7 +37,7 @@ module.exports = async function (message, messageContent = message.content) {
         break;
       case "invids":
       case "inventoryids":
-        printCharacterIdsNotEquiped(message, args.slice(1));
+        printInventoryIds(message, args.slice(1));
         break;
       case "vi":
       case "viewinventory":
@@ -230,8 +231,13 @@ async function printAllItems(message, orderBy, args){
 }
 async function printCharacterItems(message, args){
   try{
-    let items = await getDressUpItem.selectUserCharacterItems(message.author.id);
-    Embed.printItems(message, items, args[0]);
+    let pageNumber = 1;
+    if(!isNaN(args[0])){
+      pageNumber = args[0];
+      args = args.slice(1);
+    }
+    let items = await getDressUpItem.selectUserCharacterItems(message.author.id, args);
+    Embed.printItems(message, items, pageNumber);
   }catch(err){
     console.error('printCharacterItems Error : ' + err + " - " + err.stack);
     Embed.printError(message, err.message?err.message:err);
@@ -239,7 +245,7 @@ async function printCharacterItems(message, args){
 }
 async function printCharacterIds(message, args){
   try{
-    let items = await getDressUpItem.selectUserCharacterItems(message.author.id);
+    let items = await getDressUpItem.selectUserCharacterItems(message.author.id, args);
     let equippedIds = items.map(item => item.ItemId);
     Embed.printMessage(message, equippedIds.join(" "));
   }catch(err){
@@ -248,9 +254,9 @@ async function printCharacterIds(message, args){
   }
 }
 
-async function printCharacterIdsNotEquiped(message, args){
+async function printInventoryIds(message, args){
   try{
-    let items = await getDressUpItem.selctUserCharacterItemsNotEquipped(message.author.id);
+    let items = await getDressUpItem.selectUserItems(message.author.id, args);
     let equippedIds = items.map(item => item.ItemId);
     Embed.printMessage(message, equippedIds.join(" "));
   }catch(err){
@@ -260,8 +266,14 @@ async function printCharacterIdsNotEquiped(message, args){
 }
 async function printInventoryItems(message, args){
   try{
-    let items = await getDressUpItem.selectUserItems(message.author.id);
-    Embed.printInventoryItems(message, items, args[0]);
+    let pageNumber = 1;
+    if(!isNaN(args[0])){
+      pageNumber = args[0];
+      args = args.slice(1);
+    }
+
+    let items = await getDressUpItem.selectUserItems(message.author.id, args);
+    Embed.printInventoryItems(message, items, pageNumber);
   }catch(err){
     console.error('printInventoryItems Error : ' + err + " - " + err.stack);
     Embed.printError(message, err.message?err.message:err);

@@ -11,6 +11,22 @@
     "Flowers" : ":cherry_blossom:",
     "CrystalShards" : ":diamond_shape_with_a_dot_inside:"
  }
+ ,"rarityemoji": {
+   "Basic" : "⚪",
+   "basic" : "⚪",
+   "Fine" : "💙",
+   "fine" : "💙",
+   "Masterwork" : "💚",
+   "masterwork" : "💚",
+   "Rare" : "💛",
+   "rare" : "💛",
+   "Exotic" : "🧡",
+   "exotic" : "🧡",
+   "Legendary" : "💜",
+   "legendary" : "💜",
+   "Special" : "🌟",
+   "special" : "🌟"
+ }
  ,"admins" : {
     "Anzy" : false,
     "78615507703439360" : true,
