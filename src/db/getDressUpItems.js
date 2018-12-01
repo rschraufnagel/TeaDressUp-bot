@@ -105,7 +105,7 @@ async function  selectItemsById(itemids) {
 }
 async function  selectItemById(itemid) {
   let db = new sqlite3.Database(config.dressup_connection, (err) => {if (err) {reject(err);}});
-  let sqlquery = "Select ItemId,ItemName,FileName,Value from DressUpItems WHERE ItemId = ?";
+  let sqlquery = "Select ItemId,ItemName,FileName,Value,Rarity from DressUpItems WHERE ItemId = ?";
   let row = await getAsync(db, sqlquery, [itemid]);
   db.close();
 
@@ -114,7 +114,7 @@ async function  selectItemById(itemid) {
 
 async function  selectItemByFileName(fileName) {
   let db = new sqlite3.Database(config.dressup_connection, (err) => {if (err) {reject(err);}});
-  let sqlquery = "Select ItemId,ItemName,FileName,Value from DressUpItems WHERE FileName = ?";
+  let sqlquery = "Select ItemId,ItemName,FileName,Value,Rarity from DressUpItems WHERE FileName = ?";
   let row = await getAsync(db, sqlquery, [fileName]);
   db.close();
 
@@ -123,7 +123,7 @@ async function  selectItemByFileName(fileName) {
 
 async function  selectUserItem(userid, unitid) {
   let db = new sqlite3.Database(config.dressup_connection, (err) => {if (err) {reject(err);}});
-  let sqlquery = "Select DressUpItems.ItemId,Sequence,ItemName,FileName,Value from DressUpItems INNER JOIN DiscordUserDressUpItemsOwned ON DiscordUserDressUpItemsOwned.ItemId = DressUpItems.ItemId WHERE UserId = ? AND DressUpItems.ItemId = ?";
+  let sqlquery = "Select DressUpItems.ItemId,Sequence,ItemName,FileName,Value,Rarity from DressUpItems INNER JOIN DiscordUserDressUpItemsOwned ON DiscordUserDressUpItemsOwned.ItemId = DressUpItems.ItemId WHERE UserId = ? AND DressUpItems.ItemId = ?";
   let row = await getAsync(db, sqlquery, [userid, unitid]);
   db.close();
 
