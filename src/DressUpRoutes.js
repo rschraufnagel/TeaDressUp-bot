@@ -288,7 +288,7 @@ async function viewitem(message, args){
     }else{
       let imageNames = ImageBuilder.getPreviewSequence([item.FileName]);
       let buffer1 = await ImageBuilder.getBuffer(imageNames);
-      Embed.printMessage(message, '', buffer1);
+      Embed.printMessage(message, '**'+item.ItemName + '**\n Val: '+ item.Value + " `" + config.rarityemoji[item.Rarity]+"`", buffer1);
     }
   }catch(err){
     console.error('viewitem Error : ' + err + " - " + err.stack);
