@@ -96,7 +96,7 @@ module.exports = {
             {
                 Embed.printMessage(message, "<:inAwe:417515935331778560> WOW! "+ message.author.username+" is super lucky! <:inAwe:417515935331778560>");
             }
-            if(Math.abs(RarityPool.Special - rngNum) <= 3 && !RarityPool.Special)
+            if(Math.abs(RarityPool.Special - rngNum) <= 3 && RarityPool.Special != 0)
             {
                 Embed.printMessage(message, message.author.username+" was so close to a Special item! <:tehepelo:412986455640768516>");
             }
@@ -109,7 +109,7 @@ module.exports = {
             {
                 Embed.printMessage(message, "<:inAwe:417515935331778560> WOW! "+ message.author.username+" is super lucky! <:inAwe:417515935331778560>");
             }
-            if(Math.abs(RarityPool.Legendary - rngNum) <= 3 && !RarityPool.Legendary)
+            if(Math.abs(RarityPool.Legendary - rngNum) <= 3 && RarityPool.Legendary != 0)
             {
                 Embed.printMessage(message, message.author.username+" was so close to a Legendary item! <:tehepelo:412986455640768516>");
             }
@@ -122,7 +122,7 @@ module.exports = {
             {
                 Embed.printMessage(message, "<:inAwe:417515935331778560> WOW! "+ message.author.username+" is super lucky! <:inAwe:417515935331778560>");
             }
-            if(Math.abs(RarityPool.Exotic - rngNum) <= 3 && !RarityPool.Exotic)
+            if(Math.abs(RarityPool.Exotic - rngNum) <= 3 && RarityPool.Exotic != 0)
             {
                 Embed.printMessage(message, message.author.username+" was so close to an Exotic item! <:tehepelo:412986455640768516>");
             }
@@ -135,7 +135,7 @@ module.exports = {
             {
                 Embed.printMessage(message, "<:inAwe:417515935331778560> WOW! "+ message.author.username+" is super lucky! <:inAwe:417515935331778560>");
             }
-            if(Math.abs(RarityPool.Rare - rngNum) <= 3 && !RarityPool.Rare)
+            if(Math.abs(RarityPool.Rare - rngNum) <= 3 && RarityPool.Rare != 0)
             {
                 Embed.printMessage(message, message.author.username+" was so close to a Rare item! <:tehepelo:412986455640768516>");
             }
@@ -148,7 +148,7 @@ module.exports = {
             {
                 Embed.printMessage(message, "<:inAwe:417515935331778560> WOW! "+ message.author.username+" is super lucky! <:inAwe:417515935331778560>");
             }
-            if(Math.abs(RarityPool.Masterwork - rngNum) <= 3 || !RarityPool.Masterwork)
+            if(Math.abs(RarityPool.Masterwork - rngNum) <= 3 || RarityPool.Masterwork != 0)
             {
                 Embed.printMessage(message, message.author.username+" was so close to a Masterwork item! <:tehepelo:412986455640768516>");
             }
@@ -157,7 +157,7 @@ module.exports = {
         //Basic
         if (!foundItem && rngNum < RarityPool.Basic) {
             foundItem = await getDressUpItem.getRandomRarityItem("basic");
-            if(Math.abs(RarityPool.Fine - rngNum) <= 3 || RarityPool.Fine)
+            if(Math.abs(RarityPool.Fine - rngNum) <= 3 || RarityPool.Fine != 0)
             {
                 Embed.printMessage(message, message.author.username+" was so close to a fine item! <:tehepelo:412986455640768516>");
             }
