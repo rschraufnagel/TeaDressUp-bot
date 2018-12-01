@@ -122,14 +122,19 @@ module.exports.printLootboxes = async function (message, lootboxes, p1=1, title=
   }
 }
 
-module.exports.printMessage = function (message, text) {
+module.exports.printMessage = function (message, text, fileBuffer) {
   var msg = {
-    embed: {
+  };
+  if(text.length>1){
+    msg.embed = {
       color: parseInt(config.colours.normal),
       description: text
     }
   }
-  message.channel.send(msg);
+  if(fileBuffer){
+    msg.files =[fileBuffer];
+  }
+  return message.channel.send(msg);
 }
 
 module.exports.printError = function (message, text) {

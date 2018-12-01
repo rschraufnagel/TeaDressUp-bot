@@ -1,5 +1,7 @@
 
-const sharp = require('sharp');
+
+const config = require('../config');
+const Sharp = require('sharp');
 const fs = require('fs');
 const request = require('request-promise-native');
 
@@ -20,10 +22,9 @@ function downloadImage(url, imageName, callbackFunction){
 /**
  * Return an array of file names where the given body is inbetween back & foreground items
  */
-function getPreviewSequence(previewBodyFileName, previewFileNames){
+function getPreviewSequence(previewFileNames){
   let background = [];
   let foreground = [];
-  let keyword_back = "back";
   let regex_Back = /.*_[^_]*back[^_]*/;
   for(let i=0; i<previewFileNames.length; i++){
     let result = previewFileNames[i].match(regex_Back);
@@ -33,7 +34,7 @@ function getPreviewSequence(previewBodyFileName, previewFileNames){
       foreground.push(previewFileNames[i]);
     }
   }
-  background.push(previewBodyFileName);
+  background.push(config.previewBodyFileName);
   return background.concat(foreground);
 }
 
@@ -43,20 +44,20 @@ function getPreviewSequence(previewBodyFileName, previewFileNames){
  * @returns {Promise} promise of a buffer for the composite image.
  */
 function getBuffer(fileNames, multiplier=1){
-  let initialImagePromise = sharp('./img/input/'+fileNames[0]).toBuffer();
+  let initialImagePromise = Sharp('./img/input/'+fileNames[0]).toBuffer();
 
   let bufferMergePromise = fileNames.slice(1).reduce(function(imagePromise, component){
     return imagePromise.then(function(image){
-      return sharp(image)
-      .overlayWith('./img/input/'+component, { gravity: sharp.gravity.southeast } )
+      return Sharp(image)
+      .overlayWith('./img/input/'+component, { gravity: Sharp.gravity.southeast } )
       .toBuffer()
     })
   }, initialImagePromise)
 
 
   return bufferMergePromise.then(function(image){
-    return sharp(image)
-    .resize(192,192,{kernel: sharp.kernel.nearest})
+    return Sharp(image)
+    .resize(192,192,{kernel: Sharp.kernel.nearest})
     .toBuffer();
   });
 }

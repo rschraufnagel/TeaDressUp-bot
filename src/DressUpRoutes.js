@@ -20,6 +20,9 @@ module.exports = async function (message, messageContent = message.content) {
   if(IsRegistered || args[0] == "register")
   {
     switch (args[0].toLowerCase()) {
+      //case "is":
+      //  ItemStudioRoutes(message, args.slice(1));
+      //  break;
       case "viewallitems":
       case "viewallitemsbyname":
         printAllItems(message, "ItemName", args.slice(1));
@@ -158,10 +161,7 @@ async function viewCharacter(message, args) {
       throw Error("No items allocated to user character.");
     }
     let buffer1 = await ImageBuilder.getBuffer(fileNames);
-    
-    message.channel.send('', {
-      files: [buffer1]
-    });
+    Embed.printMessage(message, '', buffer1);
   }catch(err){
     console.error('viewCharacter Error : ' + err + " - " + err.stack);
     Embed.printError(message, err.message?err.message:err);
@@ -286,12 +286,9 @@ async function viewitem(message, args){
     if(!item){
       throw Error("Item "+ args[0] + " does not exist.");
     }else{
-      let imageNames = ImageBuilder.getPreviewSequence(config.previewBodyFileName, [item.FileName]);
+      let imageNames = ImageBuilder.getPreviewSequence([item.FileName]);
       let buffer1 = await ImageBuilder.getBuffer(imageNames);
-      let v = await message.channel.send('', {
-        files: [buffer1]
-      });
-
+      Embed.printMessage(message, '', buffer1);
     }
   }catch(err){
     console.error('viewitem Error : ' + err + " - " + err.stack);
@@ -398,9 +395,9 @@ async function buildMissingPreviews(message, args){
         for(let i=0; i<items.length; i++){
           let item = items[i];
   
-          let imageNames = ImageBuilder.getPreviewSequence(config.previewBodyFileName, [item.FileName]);
+          let imageNames = ImageBuilder.getPreviewSequence([item.FileName]);
           let buffer1 = await ImageBuilder.getBuffer(imageNames);
-          let previewMessage = await message.channel.send('', {files: [buffer1]});
+          let previewMessage = await Embed.printMessage(message, '', buffer1);
           
           let attachmentFile = previewMessage.attachments.first();
           let url = attachmentFile.url;

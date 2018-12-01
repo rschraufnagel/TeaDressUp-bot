@@ -183,13 +183,9 @@ module.exports = {
 
 
         Embed.printMessage(message, message.author.username+" rolled " + foundItem.ItemName + " (" + itemRarity + ") #"+ foundItem.ItemId);
-        let imageNames = await ImageBuilder.getPreviewSequence(config.previewBodyFileName, [foundItem.FileName]);
+        let imageNames = await ImageBuilder.getPreviewSequence([foundItem.FileName]);
         let buffer1 = await ImageBuilder.getBuffer(imageNames);
-        let v = await message.channel.send('', {
-          files: [buffer1]
-        });
-
-        Embed.printMessage(message, message.author.username + " now has " + currentCurrency + config.currencyemoji[lootBoxinfo.Currency]);
+        await Embed.printMessage(message, message.author.username + " now has " + currentCurrency + config.currencyemoji[lootBoxinfo.Currency], buffer1);
     }
     else 
     {
