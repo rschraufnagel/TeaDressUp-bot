@@ -6,7 +6,7 @@ const getLootbox = require('./db/getLootBox');
 const Embed = require('./message/Message');
 const config = require('./config');
 const lootBox = require('./LootBox');
-//const ItemStudioRoutes = require('./ItemStudioRoutes');
+const ItemStudioRoutes = require('./ItemStudioRoutes');
 
 var IsRegistered = false;
 
@@ -20,9 +20,9 @@ module.exports = async function (message, messageContent = message.content) {
   if(IsRegistered || args[0] == "register")
   {
     switch (args[0].toLowerCase()) {
-      //case "is":
-      //  ItemStudioRoutes(message, args.slice(1));
-      //  break;
+      case "is":
+        ItemStudioRoutes(message, args.slice(1));
+        break;
       case "viewallitems":
       case "viewallitemsbyname":
         printAllItems(message, "ItemName", args.slice(1));
