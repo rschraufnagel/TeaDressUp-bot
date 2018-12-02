@@ -147,7 +147,7 @@ async function brighten(message, workspace, args){
     if(args.length==0 || isNaN(args[0]) || Math.abs(args[0])>100 || args[0]<0){
       throw Error("Command Syntax: \n brighten <number> \n <number>: [0 to 100]");
     }
-    workspace.brightness = args[0];
+    workspace.Brightness = args[0];
     print(message, workspace);
   }catch(err){
     console.error('lighten Error : ' + err + " - " + err.stack);
@@ -185,7 +185,7 @@ async function value(message, workspace, args){
     if(args.length==0 || isNaN(args[0]) || Math.abs(args[0])>100){
       throw Error("Command Syntax: \n value <number> \n <number>: [-100 to 100] where 100 always returns white and -100 returns black.");
     }
-    workspace.value = args[0];
+    workspace.Value = args[0];
     print(message, workspace);
   }catch(err){
     console.error('value Error : ' + err + " - " + err.stack);
@@ -242,7 +242,7 @@ async function chroma(message, workspace, args){
     if(args.length==0 || isNaN(args[0]) || Math.abs(args[0])>100){
       throw Error("Command Syntax: \n chroma <number> \n <number>: [-100 to 100] where + is saturation and - is desaturation. \n Note: see also saturate, desaturate, greyscale");
     }
-    workspace.chroma = args[0];
+    workspace.Chroma = args[0];
     print(message, workspace);
   }catch(err){
     console.error('chroma Error : ' + err + " - " + err.stack);
@@ -256,7 +256,7 @@ async function hue(message, workspace, args){
     if(args.length==0 || isNaN(args[0]) || Math.abs(args[0])>360){
       throw Error("Command Syntax: \n hue <number> \n <number>: [-360 to 360] spins the colors \n Note: 0, -360, and 360 set back to the original hue");
     }
-    workspace.hue = args[0];
+    workspace.Hue = args[0];
     print(message, workspace);
   }catch(err){
     console.error('hue Error : ' + err + " - " + err.stack);
@@ -296,8 +296,8 @@ async function mix(message, workspace, args){
       throw Error("Command Syntax: \n mix <number> <number> <number> <number> \n<number>: [0 to 255] red \n<number>: [0 to 255] green \n<number>: [0 to 255] blue \n <number>: [0 to 100] opacity to overlay color (0 turns off mix) \n Note: see also tint, shade");
     }
     let color = "rgb("+args[0]+","+args[1]+","+args[2]+")";
-    workspace.mixColor = color;
-    workspace.mixAmount = args[3];
+    workspace.MixColor = color;
+    workspace.MixAmount = args[3];
     print(message, workspace);
   }catch(err){
     console.error('mix Error : ' + err + " - " + err.stack);
@@ -310,7 +310,7 @@ async function redShift(message, workspace, args){
     if(args.length<1 || Math.abs(args[0])>255){
       throw Error("Command Syntax: \n red <number> \n<number>: [-255 to 255] add or subtract this value from red within the image.");
     }
-    workspace.redShift = args[0];
+    workspace.RedShift = args[0];
     print(message, workspace);
   }catch(err){
     console.error('redShift Error : ' + err + " - " + err.stack);
@@ -322,7 +322,7 @@ async function greenShift(message, workspace, args){
     if(args.length<1 || Math.abs(args[0])>255){
       throw Error("Command Syntax: \n green <number> \n<number>: [-255 to 255] add or subtract this value from green within the image.");
     }
-    workspace.greenShift = args[0];
+    workspace.GreenShift = args[0];
     print(message, workspace);
   }catch(err){
     console.error('greenShift Error : ' + err + " - " + err.stack);
@@ -334,7 +334,7 @@ async function blueShift(message, workspace, args){
     if(args.length<1 || Math.abs(args[0])>255){
       throw Error("Command Syntax: \n blue <number> \n<number>: [-255 to 255] add or subtract this value from blue within the image.");
     }
-    workspace.blueShift = args[0];
+    workspace.BlueShift = args[0];
     print(message, workspace);
   }catch(err){
     console.error('blueShift Error : ' + err + " - " + err.stack);
@@ -349,9 +349,9 @@ async function flipHorizontal(message, workspace, args){
       throw Error("Command Syntax: \n fliph <boolean> \n <boolean>: [yes/no, y/n, true/false, t/f, 1/0]");
     }
     if(['1','yes','y','true','t'].includes(args[0].toLowerCase())){
-      workspace.flipHorizontal = 1;
+      workspace.FlipHorizontal = 1;
     }else{
-      workspace.flipHorizontal = 0;
+      workspace.FlipHorizontal = 0;
     }
     print(message, workspace);
   }catch(err){
@@ -365,9 +365,9 @@ async function flipVertical(message, workspace, args){
       throw Error("Command Syntax: \n flipv <boolean> \n <boolean>: [yes/no, y/n, true/false, t/f, 1/0]");
     }
     if(['1','yes','y','true','t'].includes(args[0].toLowerCase())){
-      workspace.flipVertical = 1;
+      workspace.FlipVertical = 1;
     }else{
-      workspace.flipVertical = 0;
+      workspace.FlipVertical = 0;
     }
     print(message, workspace);
   }catch(err){

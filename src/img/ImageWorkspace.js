@@ -3,16 +3,17 @@ const ImageBuilder = require('./ImageBuilder');
 module.exports = class Workspace {
   constructor(item) {
     this.template = item;
-    this.hue = 0;
-    this.value = 0;
-    this.chroma = 0;
-    this.mixColor = '';
-    this.mixAmount = 0;
-    this.redShift = 0;
-    this.greenShift = 0;
-    this.blueShift = 0;
-    this.flipHorizontal = 0;
-    this.flipVertical = 0;
+    this.WorkspaceId = null;
+    this.Hue = 0;
+    this.Value = 0;
+    this.Chroma = 0;
+    this.MixColor = '';
+    this.MixAmount = 0;
+    this.RedShift = 0;
+    this.GreenShift = 0;
+    this.BlueShift = 0;
+    this.FlipHorizontal = 0;
+    this.FlipVertical = 0;
   }
 
   async getPreviewBuffer(){
@@ -25,47 +26,47 @@ module.exports = class Workspace {
           image.flip(horizontal, vertical);
         }
 
-        
+
         let colorUpdates = [];
+
+        
         //Change the Color
-        if(ref.redShift!=0){
-          colorUpdates.push({apply: 'red', params: [parseInt(ref.redShift)]});
+        if(ref.RedShift!=0){
+          colorUpdates.push({apply: 'red', params: [parseInt(ref.RedShift)]});
         }
-        if(ref.greenShift!=0){
-          colorUpdates.push({apply: 'green', params: [parseInt(ref.greenShift)]});
+        if(ref.GreenShift!=0){
+          colorUpdates.push({apply: 'green', params: [parseInt(ref.GreenShift)]});
         }
-        if(ref.blueShift!=0){
-          colorUpdates.push({apply: 'blue', params: [parseInt(ref.blueShift)]});
+        if(ref.BlueShift!=0){
+          colorUpdates.push({apply: 'blue', params: [parseInt(ref.BlueShift)]});
         }
-        if(ref.mixColor!='' && ref.mixAmount>0){
-          colorUpdates.push({apply: 'mix', params: [ref.mixColor, ref.mixAmount]});
+        if(ref.MixColor!='' && ref.MixAmount>0){
+          colorUpdates.push({apply: 'mix', params: [ref.MixColor, ref.MixAmount]});
         }
 
         //Value
-        if(ref.value>0){
-          colorUpdates.push({apply: 'lighten', params: [ref.value]});
-        }else if(ref.value<0){
-          colorUpdates.push({apply: 'darken', params: [Math.abs(ref.value)]});
+        if(ref.Value>0){
+          colorUpdates.push({apply: 'lighten', params: [ref.Value]});
+        }else if(ref.Value<0){
+          colorUpdates.push({apply: 'darken', params: [Math.abs(ref.Value)]});
         }
         //Chroma
-        if(ref.chroma>0){
-          colorUpdates.push({apply: 'saturate', params: [ref.chroma]});
-        }else if(ref.chroma<0){
-          colorUpdates.push({apply: 'desaturate', params: [Math.abs(ref.chroma)]});
+        if(ref.Chroma>0){
+          colorUpdates.push({apply: 'saturate', params: [ref.Chroma]});
+        }else if(ref.Chroma<0){
+          colorUpdates.push({apply: 'desaturate', params: [Math.abs(ref.Chroma)]});
         }
         //Hue
-        if(ref.hue!=0){
-          colorUpdates.push({apply: 'spin', params: [parseInt(ref.hue)]});
+        if(ref.Hue!=0){
+          colorUpdates.push({apply: 'spin', params: [parseInt(ref.Hue)]});
         }
 
 
        if(colorUpdates.length>0){
          image.color(colorUpdates);
        }
-        console.log("Buffering 2");
         return image.getBufferAsync(Jimp.MIME_PNG);
       });
-    console.log("Buffering 3");
     return buffer;
   }
 }
