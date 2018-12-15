@@ -95,14 +95,29 @@ async function  selectItemsMissingPreview() {
   return rows;
 }
 
-async function  selectItemsById(itemids) {
-  let db = new sqlite3.Database(config.dressup_connection, (err) => {if (err) {reject(err);}});
-  let sqlquery = "Select ItemId,ItemName,FileName,Value from DressUpItems WHERE ItemId in (" + "?,".repeat(itemids.length).substring(0, end-1) + ")";
-  let rows = await allAsync(db, sqlquery, itemids);
-  db.close();
 
-  return rows;
+/**
+ * Query the Items with the given ids return in the order the ids were provided.
+ */
+async function selectItemsById(itemIds){
+  let items = [];
+  if(itemIds.length>0){
+    let db = new sqlite3.Database(config.dressup_connection, (err) => {if (err) {reject(err);}});
+    let sql = 'WITH Sequence (Sort, Id) AS (VALUES ';
+    let parms = [];
+    for(index=0; index<itemIds.length; index++){
+      parms.push(index);
+      parms.push(itemIds[index]);
+      sql += "(?,?),";
+    }
+    sql = sql.substring(0, sql.length-1)
+    sql += ') SELECT Item.* FROM DressUpItems As Item INNER JOIN Sequence On Item.ItemId = Id ORDER BY Sort ASC';
+    items = await allAsync(db, sql, parms);
+    db.close();
+  }
+  return items;
 }
+
 async function  selectItemById(itemid) {
   let db = new sqlite3.Database(config.dressup_connection, (err) => {if (err) {reject(err);}});
   let sqlquery = "Select ItemId,ItemName,FileName,Value,Rarity from DressUpItems WHERE ItemId = ?";
