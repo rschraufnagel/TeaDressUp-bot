@@ -22,6 +22,36 @@ function itemEmbed(msgEmbed, items) {
   return newEmbed;
 }
 
+module.exports.printWorkspaceColors = async function (message, items, p1=1, title="Colors") {
+  var msgEmbed = Paginate.createEmbedPage(p1, items, title, colorEmbed)
+  var response = await message.channel.send(msgEmbed);
+  
+  if (config.pageLength < items.length) {
+    Paginate.addListeners(message.author.id, response, p1, items, title, colorEmbed);
+  }
+}
+
+function colorEmbed(msgEmbed, items) {
+  var newEmbed = msgEmbed;
+  for (var i = 0; i < items.length; i++) {
+    var item = items[i];
+    var details = "";
+    details += "**V:** " + item.Value;
+    details += " |";
+    details += " **C:** " + item.Chroma;
+    details += " |";
+    details += " **R:** " + item.RedShift;
+    details += " **G:** " + item.GreenShift;
+    details += " **B:** " + item.BlueShift;
+    details += " |";
+    details += " **M:** " + item.MixColor + " " + item.MixAmount + "%";
+    details += " |";
+    details += " **H** " + item.Hue;
+    newEmbed.addField(item.ColorId + ". " + item.Name, details + "\n---------------------------------------------", false);
+  }
+  return newEmbed;
+}
+
 module.exports.printInventoryItems = async function (message, items, p1=1, title="Items") {
   var msgEmbed = Paginate.createEmbedPage(p1, items, title, inventoryItemEmbed)
   var response = await message.channel.send(msgEmbed);
