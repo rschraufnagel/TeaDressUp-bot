@@ -8,7 +8,8 @@ module.exports = {
   downloadImage : downloadImage,
   getBuffer : getBuffer,
   getFilePath : getFilePath,
-  sizeUpBuffer : sizeUpBuffer
+  sizeUpBuffer : sizeUpBuffer,
+  saveFile : saveFile
 }
 
 function getFilePath(fileName){
@@ -19,6 +20,12 @@ function downloadImage(url, imageName, callbackFunction){
   request.head(url, function(err, response, body){
     request(url).pipe(fs.createWriteStream(getFilePath(imageName))).on('close',callbackFunction);
   });
+}
+
+async function saveFile(fileName, buffer){
+  let fielPath = getFilePath(fileName);
+  let fileInfo = await Sharp(buffer)
+    .toFile(fielPath);
 }
 
 /**
